@@ -67,12 +67,12 @@ export function createLocalAnalysis(idea: string): FounderAnalysis {
         score: tractionScore,
         description:
           tractionScore >= 55
-            ? 'Traction is evidence that the market is doing something meaningful: paying, using, waiting, renewing, or referring. You have a few signs Sarah can work with, but they need to become measurable proof.'
-            : "Traction is quantitative evidence of market demand: revenue, active users, growth rate, retention, pilots, or strong waitlist conversion. Right now Sarah needs more proof that people are taking action, not just nodding politely.",
+            ? 'Traction is proof that somebody wants your product: revenue, active users, growth rate, retention, and customer engagement. You have signals Sarah can work with, but they need to become investor-grade metrics.'
+            : 'Traction is quantitative evidence of market demand. Sarah needs proof that people actually want your product: first paying customers, active users, growth, retention, and engagement.',
         tips: [
-          'Name the narrow customer segment with the highest pain and reach 20 of them this week',
-          'Convert interest into a concrete action: paid pilot, LOI, waitlist deposit, or recurring usage',
-          'Track activation, retention, and referral behavior from the first test users',
+          'Get your first 10 paying customers or signed pilots before talking to investors',
+          'Track monthly growth in revenue, active users, retention, and engagement',
+          'Document the exact customer actions that prove market demand',
           'Collect customer quotes that describe the pain in their own words',
           'Define the one traction metric that would make this company undeniable',
         ],
@@ -83,14 +83,14 @@ export function createLocalAnalysis(idea: string): FounderAnalysis {
         score: authorityScore,
         description:
           authorityScore >= 55
-            ? 'Authority is why the market should believe you are the right person to solve this. Sarah can see some founder-market fit, but it should be made explicit through proof, access, and trusted voices.'
-            : 'Authority is founder credibility: domain expertise, lived experience, market access, advisors, public insight, or a track record that makes you unusually believable. First-time founders can build this, but they have to show their homework.',
+            ? 'Authority is founder credibility and domain expertise. Sarah can see founder-market fit, but it should be made explicit through proof, access, advisor relationships, and trusted voices.'
+            : 'Authority is why investors should believe you are the right person to build this. First-time founders can build it through industry insight, public recognition, advisor relationships, and thought leadership.',
         tips: [
           'Write a sharp founder-market-fit paragraph: why you, why this problem, why now',
           'Recruit one advisor or design partner with visible credibility in the market',
-          'Publish useful insight where your customers already spend attention',
+          'Publish useful insights where your customers and investors already spend attention',
+          'Get featured, quoted, or invited into an industry conversation',
           'Show evidence that customers trust you with the problem, not just the product',
-          'Map the unfair access you have to buyers, data, distribution, or talent',
         ],
       },
       funding: {
@@ -99,12 +99,12 @@ export function createLocalAnalysis(idea: string): FounderAnalysis {
         score: fundingScore,
         description:
           fundingScore >= 55
-            ? 'Funding readiness means you know how much capital unlocks the next proof point and why that milestone changes the company. Sarah sees some pieces, but the round story needs discipline.'
-            : "Funding readiness means knowing your runway, use of funds, milestones, and why this round is the right financing path. 'We need money to figure it out' is not a plan Sarah can defend.",
+            ? 'Funding readiness means you know whether this is Pre-Seed or Seed, how much runway the round buys, and which milestones make the next raise easier. Sarah sees the start of a capital story.'
+            : "Funding readiness means knowing your stage, runway, use of funds, milestones, and unit economics. 'I need money to figure it out' is not a plan Sarah can defend.",
         tips: [
-          'Define the next 18 months of runway, burn, and hiring with a conservative budget',
+          'Decide if you are Pre-Seed ($10K-$500K) or Seed ($500K-$2M)',
+          'Define 18-24 months of runway, burn, and hiring with a conservative budget',
           'Tie the raise to three milestones that materially de-risk the company',
-          'Decide whether VC, angels, grants, revenue, or bootstrapping fits the business model',
           'Build a simple financial model with customer acquisition and gross margin assumptions',
           'Warm up investors only after the traction story has a crisp proof point',
         ],

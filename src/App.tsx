@@ -2,19 +2,18 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Routes, Route } from 'react-router';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { TrendingUp, Shield, DollarSign, RotateCcw, Share2, ArrowDown, Sparkles } from 'lucide-react';
+import { TrendingUp, Shield, DollarSign, RotateCcw, Share2, ArrowDown, Sparkles, Volume2 } from 'lucide-react';
 import ManifestoOrb from './sections/ManifestoOrb';
-import IdeaChamber from './sections/IdeaChamber';
-import ContentReveal from './sections/ContentReveal';
-import { analyzeFounder, createLocalAnalysis, type FounderAnalysis } from './lib/founder-analysis';
+import VoiceInterview from './sections/VoiceInterview';
+import { analyzeFounder, createLocalAnalysis, type DimensionKey, type FounderAnalysis } from './lib/founder-analysis';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const [userIdea, setUserIdea] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [activeTab, setActiveTab] = useState<DimensionKey>('traction');
   const [analysisResult, setAnalysisResult] = useState<FounderAnalysis>(() =>
     createLocalAnalysis('Startup idea submitted')
   );
@@ -22,6 +21,7 @@ function Home() {
   const analysisRef = useRef<HTMLDivElement>(null);
   const verdictRef = useRef<HTMLDivElement>(null);
   const scrollTriggersRef = useRef<ScrollTrigger[]>([]);
+  const spokenAnalysisRef = useRef('');
 
   // Handle scroll progress for ManifestoOrb
   useEffect(() => {
@@ -46,7 +46,6 @@ function Home() {
 
   const handleStartAnalysis = useCallback(async (idea: string) => {
     const submittedIdea = idea.trim() || 'Startup idea submitted';
-    setUserIdea(submittedIdea);
     setShowAnalysis(true);
     setIsAnalyzing(true);
 
@@ -59,25 +58,53 @@ function Home() {
 
     const result = await analyzeFounder(submittedIdea);
     setAnalysisResult(result);
+    setActiveTab('traction');
     setIsAnalyzing(false);
   }, []);
 
   const handleReset = useCallback(() => {
     setShowAnalysis(false);
-    setUserIdea('');
     setAnalysisResult(createLocalAnalysis('Startup idea submitted'));
     setIsAnalyzing(false);
+    setActiveTab('traction');
     setScrollProgress(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const speakSarahSummary = useCallback((analysis: FounderAnalysis) => {
+    if (!window.speechSynthesis) return;
+
+    const dimensionEntries = Object.entries(analysis.dimensions) as Array<
+      [DimensionKey, FounderAnalysis['dimensions'][DimensionKey]]
+    >;
+    const weakest = dimensionEntries.reduce((lowest, current) =>
+      current[1].score < lowest[1].score ? current : lowest
+    )[1];
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(
+      `Sarah's readout. Your overall score is ${analysis.overallScore} out of 100. ${analysis.summary} Your weakest area is ${weakest.title}, scoring ${weakest.score}. Start there: ${weakest.tips[0]}.`
+    );
+    utterance.rate = 0.92;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  useEffect(() => {
+    if (isAnalyzing || !showAnalysis) return;
+    const signature = `${analysisResult.idea}-${analysisResult.overallScore}`;
+    if (spokenAnalysisRef.current === signature) return;
+    spokenAnalysisRef.current = signature;
+    speakSarahSummary(analysisResult);
+  }, [analysisResult, isAnalyzing, showAnalysis, speakSarahSummary]);
 
   // Sarah's messages
   const sarahMessages = [
     {
       type: 'sarah',
       text: isAnalyzing
-        ? `I'm running your pitch through Sarah's backend check: "${userIdea || 'Your startup idea'}"... hold still while I look for the missing proof.`
-        : `Just finished analyzing your pitch: "${userIdea || 'Your startup idea'}"... let's just say, I've seen Kickstarter campaigns with more urgency.`,
+        ? `I'm scoring your voice interview now. I'm looking for proof across Traction, Authority, and Funding.`
+        : `I finished listening to your founder interview. The transcript gives me enough to score where you are today.`,
     },
     {
       type: 'sarah',
@@ -91,21 +118,25 @@ function Home() {
   // Analysis data for Traction, Authority, Funding
   const analysisData = [
     {
+      key: 'traction' as const,
       ...analysisResult.dimensions.traction,
       color: '#a855f7',
       icon: <TrendingUp size={20} />,
     },
     {
+      key: 'authority' as const,
       ...analysisResult.dimensions.authority,
       color: '#7c3aed',
       icon: <Shield size={20} />,
     },
     {
+      key: 'funding' as const,
       ...analysisResult.dimensions.funding,
       color: '#c084fc',
       icon: <DollarSign size={20} />,
     },
   ];
+  const activeInsight = analysisData.find((data) => data.key === activeTab) || analysisData[0];
 
   return (
     <div style={{ background: '#020617', minHeight: '100vh' }}>
@@ -196,7 +227,7 @@ function Home() {
                 letterSpacing: '-0.02em',
               }}
             >
-              An AI-powered VC that actually reads your pitch decks.
+              Talk to Sarah. Find the proof your startup is missing.
             </h1>
             <p
               style={{
@@ -206,7 +237,7 @@ function Home() {
                 lineHeight: 1.6,
               }}
             >
-              Upload your deck. Get roasted. Find out what you're missing.
+              Answer three voice questions. Sarah scores your Traction, Authority, and Funding readiness.
             </p>
             <button
               onClick={() => {
@@ -235,7 +266,7 @@ function Home() {
                 (e.target as HTMLButtonElement).style.boxShadow = '0 0 30px rgba(168, 85, 247, 0.3)';
               }}
             >
-              Pitch Sarah
+              Start voice interview
             </button>
           </div>
 
@@ -271,7 +302,7 @@ function Home() {
           zIndex: 5,
         }}
       >
-        <IdeaChamber onStartAnalysis={handleStartAnalysis} />
+        <VoiceInterview onStartAnalysis={handleStartAnalysis} />
       </section>
 
       {/* ===== ROAST ANALYSIS SECTION ===== */}
@@ -365,26 +396,148 @@ function Home() {
             </h2>
           </div>
 
-          {/* Three Analysis Cards */}
           <div
+            className="sarah-dashboard"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-              gap: '32px',
+              border: '1px solid rgba(168, 85, 247, 0.18)',
+              borderRadius: '8px',
+              background: 'rgba(15, 23, 42, 0.68)',
+              backdropFilter: 'blur(20px)',
+              overflow: 'hidden',
             }}
           >
-            {analysisData.map((data) => (
-              <ContentReveal
-                key={data.title}
-                title={data.title}
-                subtitle={data.subtitle}
-                score={data.score}
-                description={data.description}
-                tips={data.tips}
-                color={data.color}
-                icon={data.icon}
-              />
-            ))}
+            <div
+              className="sarah-dashboard-tabs"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                borderBottom: '1px solid rgba(148, 163, 184, 0.14)',
+              }}
+            >
+              {analysisData.map((data) => {
+                const isActive = activeTab === data.key;
+
+                return (
+                  <button
+                    key={data.key}
+                    onClick={() => setActiveTab(data.key)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px',
+                      minHeight: '72px',
+                      border: 'none',
+                      borderRight: data.key === 'funding' ? 'none' : '1px solid rgba(148, 163, 184, 0.14)',
+                      background: isActive ? `${data.color}18` : 'rgba(2, 6, 23, 0.2)',
+                      color: isActive ? '#f8fafc' : '#94a3b8',
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                  >
+                    <span style={{ color: data.color }}>{data.icon}</span>
+                    {data.title}
+                    <span style={{ color: data.color }}>{data.score}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              className="sarah-dashboard-panel"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(180px, 0.35fr) minmax(0, 0.65fr)',
+                gap: '32px',
+                padding: '36px',
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '50%',
+                    border: `4px solid ${activeInsight.color}`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: `0 0 28px ${activeInsight.color}40`,
+                  }}
+                >
+                  <span style={{ color: activeInsight.color, fontSize: '36px', fontWeight: 800 }}>
+                    {activeInsight.score}
+                  </span>
+                  <span style={{ color: '#64748b', fontSize: '12px' }}>/ 100</span>
+                </div>
+                <h3 style={{ color: '#f8fafc', fontSize: '30px', marginTop: '24px' }}>
+                  {activeInsight.subtitle}
+                </h3>
+                <button
+                  onClick={() => speakSarahSummary(analysisResult)}
+                  style={{
+                    marginTop: '18px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '11px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(148, 163, 184, 0.22)',
+                    background: 'rgba(2, 6, 23, 0.48)',
+                    color: '#e2e8f0',
+                    cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 700,
+                  }}
+                >
+                  <Volume2 size={17} />
+                  Replay Sarah
+                </button>
+              </div>
+
+              <div>
+                <p style={{ color: '#cbd5e1', fontSize: '17px', lineHeight: 1.75 }}>
+                  {activeInsight.description}
+                </p>
+                <div
+                  style={{
+                    marginTop: '28px',
+                    color: '#64748b',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    letterSpacing: '1.4px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  What to change next
+                </div>
+                <div style={{ display: 'grid', gap: '12px', marginTop: '14px' }}>
+                  {activeInsight.tips.map((tip, index) => (
+                    <div
+                      key={tip}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '28px 1fr',
+                        gap: '12px',
+                        alignItems: 'start',
+                        padding: '14px 16px',
+                        borderRadius: '8px',
+                        background: 'rgba(2, 6, 23, 0.46)',
+                        border: `1px solid ${activeInsight.color}18`,
+                        color: '#e2e8f0',
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      <span style={{ color: activeInsight.color, fontWeight: 800 }}>{index + 1}</span>
+                      <span>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Overall Score */}
@@ -470,9 +623,9 @@ function Home() {
         >
           Sarah has spoken.
           <br />
-          <span style={{ color: '#a855f7' }}>Your deck needs work.</span>
+          <span style={{ color: '#a855f7' }}>Your next milestone is clearer.</span>
           <br />
-          But hey, at least the AI was honest.
+          Now tighten the proof.
         </div>
 
         <div
@@ -510,7 +663,7 @@ function Home() {
             }}
           >
             <RotateCcw size={18} />
-            Upload Another Deck
+            Run Another Interview
           </button>
           <button
             style={{
@@ -540,7 +693,7 @@ function Home() {
             }}
           >
             <Share2 size={18} />
-            Share this Roast
+            Share Sarah's Readout
           </button>
         </div>
 
@@ -571,7 +724,7 @@ function Home() {
             <span>theAI.vc</span>
           </div>
           <p style={{ fontSize: '13px', color: '#475569' }}>
-            Not financial advice. Sarah is an AI. But she's usually right.
+            Not financial advice. Sarah is an AI coach for founder readiness.
           </p>
         </div>
       </section>

@@ -103,3 +103,19 @@
     background: linear-gradient(90deg, #a855f7, #7c3aed, #a855f7);
   }
 }
+
+@media (max-width: 820px) {
+  .voice-interview-grid,
+  .sarah-dashboard-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sarah-dashboard-tabs {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sarah-dashboard-tabs button {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+  }
+}

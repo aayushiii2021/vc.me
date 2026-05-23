@@ -1,6 +1,6 @@
 # vc.me
 
-AI agent for founders to help them reach their next milestone. The root app is a React + Vite frontend where founders pitch Sarah, VC.me's AI robot, and get feedback across Traction, Authority, and Funding.
+AI agent for founders to help them reach their next milestone. The root app is a React + Vite speech-to-text frontend where founders talk to Sarah, VC.me's AI robot, and get feedback across Traction, Authority, and Funding.
 
 ## Frontend
 
@@ -16,7 +16,7 @@ python3 scripts/vcme_api.py
 VITE_VCME_API_URL=http://127.0.0.1:8787 npm run dev
 ```
 
-The frontend sends founder ideas to `POST /api/founder-analysis` and displays the returned Traction, Authority, and Funding scores.
+Sarah prompts founders through three questions, transcribes or accepts typed answers, sends the interview to `POST /api/founder-analysis`, speaks the final readout, and displays a Traction, Authority, and Funding dashboard.
 
 ## Backend Adapter
 
