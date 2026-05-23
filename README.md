@@ -18,6 +18,8 @@ VITE_VCME_API_URL=http://127.0.0.1:8787 npm run dev
 
 Sarah prompts founders through three questions, transcribes or accepts typed answers, sends the interview to `POST /api/founder-analysis`, speaks the final readout, and displays a Traction, Authority, and Funding dashboard.
 
+See [docs/backend-workflow.md](docs/backend-workflow.md) for the Google Cloud, GMI, and RocketRide backend architecture.
+
 ## Backend Adapter
 
 `scripts/vcme_api.py` is a lightweight local API for Sarah's founder diagnosis. It uses no external Python dependencies and exposes:
@@ -31,7 +33,13 @@ RocketRide is installed in Cursor (`RocketRide.rocketride` v1.1.0). This repo ho
 
 ## Pipeline
 
+Contact enrichment:
+
 `pipelines/vc_contact_enrich.pipe`
+
+Founder readiness interview:
+
+`pipelines/founder_readiness_interview.pipe`
 
 ```text
 dropper -> parse -> question -> prompt -> llm_gmi_cloud -> response_answers

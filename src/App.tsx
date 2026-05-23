@@ -165,6 +165,18 @@ function Home() {
           {/* ManifestoOrb Background */}
           <ManifestoOrb scrollProgress={scrollProgress} />
 
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 2,
+              background:
+                'linear-gradient(180deg, rgba(2, 6, 23, 0.78) 0%, rgba(2, 6, 23, 0.56) 48%, rgba(2, 6, 23, 0.88) 100%)',
+              pointerEvents: 'none',
+            }}
+          />
+
           {/* Top Nav */}
           <nav
             style={{
@@ -176,7 +188,7 @@ function Home() {
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '24px 40px',
-              zIndex: 10,
+              zIndex: 12,
             }}
           >
             <div
@@ -210,9 +222,9 @@ function Home() {
           <div
             style={{
               position: 'relative',
-              zIndex: 10,
+              zIndex: 12,
               textAlign: 'center',
-              maxWidth: '800px',
+              maxWidth: '920px',
               padding: '0 24px',
               marginTop: '15vh',
             }}
@@ -221,10 +233,11 @@ function Home() {
               style={{
                 fontSize: 'clamp(36px, 5vw, 64px)',
                 fontWeight: 700,
-                color: '#f8fafc',
+                color: '#ffffff',
                 lineHeight: 1.1,
                 marginBottom: '20px',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0',
+                textShadow: '0 3px 28px rgba(0, 0, 0, 0.8)',
               }}
             >
               Talk to Sarah. Find the proof your startup is missing.
@@ -232,9 +245,10 @@ function Home() {
             <p
               style={{
                 fontSize: '18px',
-                color: '#94a3b8',
+                color: '#dbeafe',
                 marginBottom: '32px',
                 lineHeight: 1.6,
+                textShadow: '0 2px 16px rgba(0, 0, 0, 0.7)',
               }}
             >
               Answer three voice questions. Sarah scores your Traction, Authority, and Funding readiness.

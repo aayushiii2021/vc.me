@@ -4,11 +4,33 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
+from urllib.parse import urlparse
+from uuid import uuid4
 from datetime import datetime, timezone
 
 
 HOST = os.environ.get("VCME_API_HOST", "127.0.0.1")
 PORT = int(os.environ.get("VCME_API_PORT", "8787"))
+
+INTERVIEW_QUESTIONS = [
+    {
+        "key": "traction",
+        "title": "Traction",
+        "prompt": "What proof do you have that people want this product? Tell me about revenue, active users, growth, retention, pilots, waitlists, or customer engagement.",
+    },
+    {
+        "key": "authority",
+        "title": "Authority",
+        "prompt": "Why are you the right founder to build this? Tell me about your domain expertise, track record, industry knowledge, advisors, recognition, or audience.",
+    },
+    {
+        "key": "funding",
+        "title": "Funding",
+        "prompt": "How much capital do you need, what stage are you raising for, what runway does it buy, and what milestones will you hit with it?",
+    },
+]
+
+SESSION_STORE = {}
 
 
 def has_any(text, words):
@@ -116,16 +138,16 @@ class Handler(BaseHTTPRequestHandler):
         self._send_json(204, {})
 
     def do_GET(self):
-        if self.path == "/health":
+        path = urlparse(self.path).path
+        if path == "/health":
             self._send_json(200, {"ok": True, "service": "vcme-api"})
+        elif path == "/api/interview-questions":
+            self._send_json(200, {"questions": INTERVIEW_QUESTIONS})
         else:
             self._send_json(404, {"error": "Not found"})
 
     def do_POST(self):
-        if self.path != "/api/founder-analysis":
-            self._send_json(404, {"error": "Not found"})
-            return
-
+        path = urlparse(self.path).path
         length = int(self.headers.get("Content-Length", "0"))
         try:
             payload = json.loads(self.rfile.read(length) or b"{}")
@@ -133,7 +155,64 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": "Invalid JSON"})
             return
 
-        self._send_json(200, local_analysis(payload.get("idea", "")))
+        if path == "/api/founder-analysis":
+            self._send_json(200, local_analysis(payload.get("idea", "")))
+            return
+
+        if path == "/api/interview-sessions":
+            session_id = payload.get("session_id") or str(uuid4())
+            SESSION_STORE[session_id] = {
+                "session_id": session_id,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "answers": {},
+                "transcript": [],
+            }
+            self._send_json(201, {"session_id": session_id, "questions": INTERVIEW_QUESTIONS})
+            return
+
+        if path.startswith("/api/interview-sessions/"):
+            parts = path.strip("/").split("/")
+            if len(parts) != 4:
+                self._send_json(404, {"error": "Not found"})
+                return
+
+            session_id = parts[2]
+            action = parts[3]
+            session = SESSION_STORE.setdefault(
+                session_id,
+                {
+                    "session_id": session_id,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "answers": {},
+                    "transcript": [],
+                },
+            )
+
+            if action == "transcript":
+                question_key = payload.get("question_key")
+                transcript = (payload.get("transcript") or "").strip()
+                if question_key and transcript:
+                    session["answers"][question_key] = transcript
+                    session["transcript"].append(
+                        {
+                            "question_key": question_key,
+                            "transcript": transcript,
+                            "created_at": datetime.now(timezone.utc).isoformat(),
+                        }
+                    )
+                self._send_json(200, session)
+                return
+
+            if action == "analyze":
+                answers = payload.get("answers") or session.get("answers") or {}
+                idea = "\n\n".join(
+                    f"{question['title']}: {answers.get(question['key'], '')}"
+                    for question in INTERVIEW_QUESTIONS
+                )
+                self._send_json(200, local_analysis(idea))
+                return
+
+        self._send_json(404, {"error": "Not found"})
 
 
 if __name__ == "__main__":
