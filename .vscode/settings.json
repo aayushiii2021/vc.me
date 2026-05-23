@@ -1,0 +1,6 @@
+{
+  "rocketride.integrations.cursor": true,
+  "rocketride.defaultPipelinePath": "pipelines",
+  "rocketride.development.connectionMode": "local",
+  "rocketride.welcomeDismissed": false
+}
