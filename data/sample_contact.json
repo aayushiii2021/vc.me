@@ -1,0 +1,22 @@
+{
+  "full_name": "Harish Abbott",
+  "email": "harish@a8c.com",
+  "linkedin": "",
+  "role": "CEO",
+  "contact_source": "intro_path",
+  "has_email": true,
+  "action_types": ["warm_via_portfolio"],
+  "target_firms": ["a8cventures.com"],
+  "max_priority_score": 67,
+  "outreach_status": "pending",
+  "location": "",
+  "summary": "Strong fit — invests at seed in media tech and has deep ties to WordPress, making them an ideal partner for Artificial Poets.",
+  "outreach_angle": "Given A8C Ventures' strong ties to WordPress and the publishing ecosystem, Artificial Poets' AI-native infrastructure for media aligns perfectly with their focus on enhancing publisher capabilities and reducing costs.",
+  "fit_signals_for": [
+    "A8C Ventures is part of Automattic, which owns WordPress, indicating a strong alignment with the publishing tech sector.",
+    "Matt Mullenweg's background as a co-founder of WordPress and his commitment to open-source solutions signal a supportive environment for AI-native infrastructure.",
+    "The firm has invested in companies that enhance the WordPress ecosystem, such as WooCommerce and Jetpack, which are relevant to Artificial Poets' target market."
+  ],
+  "fit_signals_against": [],
+  "tags": ["wp_ecosystem"]
+}

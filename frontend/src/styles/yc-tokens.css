@@ -1,0 +1,75 @@
+/**
+ * Y Combinator–inspired design tokens (light mode).
+ * Reference: brand orange #ff4000, ycombinator.com neutrals.
+ * Map semantic UI tokens in index.css; use these for brand-specific styling.
+ */
+:root {
+  /* Brand */
+  --yc-orange: #ff4000;
+  --yc-orange-hover: #e63900;
+  --yc-orange-pressed: #cc3300;
+  --yc-orange-muted: #fff4f0;
+  --yc-orange-subtle: #ffe8e0;
+
+  /* Neutrals */
+  --yc-white: #ffffff;
+  --yc-black: #000000;
+  --yc-gray-50: #fafafa;
+  --yc-gray-100: #f5f5f5;
+  --yc-gray-200: #e5e5e5;
+  --yc-gray-300: #d4d4d4;
+  --yc-gray-400: #a3a3a3;
+  --yc-gray-500: #737373;
+  --yc-gray-600: #525252;
+  --yc-gray-700: #404040;
+  --yc-gray-900: #171717;
+
+  /* Typography — system stack aligned with ycombinator.com */
+  --yc-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --yc-font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Type scale */
+  --yc-text-xs: 0.75rem;
+  --yc-text-sm: 0.875rem;
+  --yc-text-base: 1rem;
+  --yc-text-lg: 1.125rem;
+  --yc-text-xl: 1.25rem;
+  --yc-text-2xl: 1.5rem;
+  --yc-text-3xl: 1.875rem;
+  --yc-text-4xl: 2.25rem;
+  --yc-text-display: 3.5rem;
+
+  /* Line heights */
+  --yc-leading-tight: 1.15;
+  --yc-leading-normal: 1.45;
+  --yc-leading-relaxed: 1.6;
+
+  /* Letter spacing */
+  --yc-tracking-tight: -0.02em;
+  --yc-tracking-normal: 0;
+  --yc-tracking-wide: 0.02em;
+
+  /* Spacing (4px base) */
+  --yc-space-1: 0.25rem;
+  --yc-space-2: 0.5rem;
+  --yc-space-3: 0.75rem;
+  --yc-space-4: 1rem;
+  --yc-space-5: 1.25rem;
+  --yc-space-6: 1.5rem;
+  --yc-space-8: 2rem;
+  --yc-space-10: 2.5rem;
+  --yc-space-12: 3rem;
+  --yc-space-16: 4rem;
+
+  /* Radius */
+  --yc-radius-sm: 0.375rem;
+  --yc-radius-md: 0.5rem;
+  --yc-radius-lg: 0.625rem;
+  --yc-radius-xl: 0.75rem;
+
+  /* Shadows */
+  --yc-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+  --yc-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
