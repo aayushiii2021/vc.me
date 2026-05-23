@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "backend": "python3 scripts/vcme_api.py",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -6,6 +6,7 @@ import { TrendingUp, Shield, DollarSign, RotateCcw, Share2, ArrowDown, Sparkles 
 import ManifestoOrb from './sections/ManifestoOrb';
 import IdeaChamber from './sections/IdeaChamber';
 import ContentReveal from './sections/ContentReveal';
+import { analyzeFounder, createLocalAnalysis, type FounderAnalysis } from './lib/founder-analysis';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,10 @@ function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [userIdea, setUserIdea] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<FounderAnalysis>(() =>
+    createLocalAnalysis('Startup idea submitted')
+  );
   const heroRef = useRef<HTMLDivElement>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
   const verdictRef = useRef<HTMLDivElement>(null);
@@ -39,9 +44,11 @@ function Home() {
     };
   }, []);
 
-  const handleStartAnalysis = useCallback((idea: string) => {
-    setUserIdea(idea);
+  const handleStartAnalysis = useCallback(async (idea: string) => {
+    const submittedIdea = idea.trim() || 'Startup idea submitted';
+    setUserIdea(submittedIdea);
     setShowAnalysis(true);
+    setIsAnalyzing(true);
 
     // Animate to analysis section
     setTimeout(() => {
@@ -49,11 +56,17 @@ function Home() {
         analysisRef.current.scrollIntoView({ behavior: 'smooth' });
       }
     }, 100);
+
+    const result = await analyzeFounder(submittedIdea);
+    setAnalysisResult(result);
+    setIsAnalyzing(false);
   }, []);
 
   const handleReset = useCallback(() => {
     setShowAnalysis(false);
     setUserIdea('');
+    setAnalysisResult(createLocalAnalysis('Startup idea submitted'));
+    setIsAnalyzing(false);
     setScrollProgress(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -62,63 +75,35 @@ function Home() {
   const sarahMessages = [
     {
       type: 'sarah',
-      text: `Just finished analyzing your pitch: "${userIdea || 'Your startup idea'}"... let's just say, I've seen Kickstarter campaigns with more urgency.`,
+      text: isAnalyzing
+        ? `I'm running your pitch through Sarah's backend check: "${userIdea || 'Your startup idea'}"... hold still while I look for the missing proof.`
+        : `Just finished analyzing your pitch: "${userIdea || 'Your startup idea'}"... let's just say, I've seen Kickstarter campaigns with more urgency.`,
     },
     {
       type: 'sarah',
-      text: "But don't worry — I've evaluated your Traction, Authority, and Funding potential. Here's the honest breakdown:",
+      text:
+        analysisResult.source === 'backend'
+          ? "Backend connected. I've evaluated your Traction, Authority, and Funding potential with the VC.me analysis API."
+          : "I'm using Sarah's local analysis fallback. I've evaluated your Traction, Authority, and Funding potential, and here's the honest breakdown:",
     },
   ];
 
   // Analysis data for Traction, Authority, Funding
   const analysisData = [
     {
-      title: 'Traction',
-      subtitle: 'Market Validation Missing',
-      score: 23,
+      ...analysisResult.dimensions.traction,
       color: '#a855f7',
       icon: <TrendingUp size={20} />,
-      description:
-        "Traction is quantitative evidence of market demand — revenue, active users, growth rate, retention. Right now, you have an idea but no proof anyone wants it. Investors don't fund ideas; they fund momentum. Your 'potential' isn't a metric.",
-      tips: [
-        'Build an MVP and get 10 paying customers before pitching anyone',
-        'Track monthly growth rate — aim for 20%+ MoM user/revenue growth',
-        'Document everything: signups, engagement time, retention rate, NPS scores',
-        'Get 3+ customer testimonials with specific ROI numbers',
-        'Create a simple landing page and drive traffic to validate demand',
-      ],
     },
     {
-      title: 'Authority',
-      subtitle: 'Founder Credibility Gap',
-      score: 35,
+      ...analysisResult.dimensions.authority,
       color: '#7c3aed',
       icon: <Shield size={20} />,
-      description:
-        "Authority is your credibility as a founder — domain expertise, past wins, network, public recognition. First-time founders often underestimate this. Investors bet on people who've solved similar problems before. You need to become the obvious person to build this.",
-      tips: [
-        'Publish 3+ deep articles about your industry problem on Medium/Substack',
-        'Get featured or quoted in at least one industry publication',
-        'Build a personal brand on LinkedIn/Twitter with consistent insights',
-        'Recruit an advisor who has successfully exited a company in your space',
-        'Speak at one industry event or podcast — visibility builds authority',
-      ],
     },
     {
-      title: 'Funding',
-      subtitle: 'Capital Readiness: Early',
-      score: 18,
+      ...analysisResult.dimensions.funding,
       color: '#c084fc',
       icon: <DollarSign size={20} />,
-      description:
-        "Funding readiness means knowing exactly how much you need, what you'll use it for, and having the metrics to justify the ask. At pre-seed/seed stage, investors want to see you've thought about unit economics, runway, and milestones. 'I need money to figure it out' isn't a plan.",
-      tips: [
-        'Calculate exact runway needs: 18-24 months of burn rate + buffer',
-        'Define 3 clear milestones you\u2019ll hit with this funding round',
-        'Research comparable seed rounds in your sector for valuation benchmarks',
-        'Build a financial model with conservative, base, and optimistic scenarios',
-        'Warm up 5+ investor relationships 3 months before you need the check',
-      ],
     },
   ];
 
@@ -356,16 +341,16 @@ function Home() {
 
           {/* Analysis Title */}
           <div style={{ marginBottom: '48px', textAlign: 'center' }}>
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                color: '#a855f7',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-              }}
-            >
-              The Damage Report
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: analysisResult.source === 'backend' ? '#22c55e' : '#a855f7',
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                }}
+              >
+              {analysisResult.source === 'backend' ? 'Backend Analysis Connected' : 'Local Sarah Analysis'}
             </span>
             <h2
               style={{
@@ -436,7 +421,7 @@ function Home() {
                 lineHeight: 1,
               }}
             >
-              25
+              {isAnalyzing ? '...' : analysisResult.overallScore}
               <span
                 style={{
                   fontSize: '24px',
@@ -457,8 +442,7 @@ function Home() {
                 lineHeight: 1.6,
               }}
             >
-              You're at the "idea stage" — which is fine! Every unicorn started here. 
-              The difference is they obsessed over proving demand before asking for money.
+              {analysisResult.summary}
             </p>
           </div>
         </section>

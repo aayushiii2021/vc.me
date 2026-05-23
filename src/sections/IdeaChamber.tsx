@@ -10,7 +10,7 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
   const chamberRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [showUpload, setShowUpload] = useState(false);
+  const [showUpload, setShowUpload] = useState(true);
   const [ideaText, setIdeaText] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const masterTlRef = useRef<gsap.core.Timeline | null>(null);
@@ -65,8 +65,6 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
     zoomTl.call(() => {
       gsap.set('.idea-chamber-container', { display: 'none' });
       setShowUpload(true);
-      gsap.set('.upload-interface', { display: 'flex', opacity: 0 });
-      gsap.to('.upload-interface', { opacity: 1, duration: 1 });
     });
   }, []);
 
@@ -114,7 +112,7 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
           position: 'absolute',
           width: '100%',
           height: '100%',
-          display: 'flex',
+          display: showUpload ? 'none' : 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -146,6 +144,7 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
               style={{
                 border: '2px solid #a855f7',
                 boxShadow: '0 0 100px rgba(168, 85, 247, 0.3), inset 0 0 100px rgba(168, 85, 247, 0.1)',
+                pointerEvents: 'none',
               }}
             />
             {/* Orb Ring 2 */}
@@ -155,6 +154,7 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
                 border: '2px solid rgba(168, 85, 247, 0.3)',
                 width: '350px',
                 height: '350px',
+                pointerEvents: 'none',
               }}
             />
             {/* Orb Ring 3 */}
@@ -164,6 +164,7 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
                 border: '2px solid rgba(168, 85, 247, 0.15)',
                 width: '120px',
                 height: '120px',
+                pointerEvents: 'none',
               }}
             />
             {/* Center Button */}
@@ -201,8 +202,8 @@ export default function IdeaChamber({ onStartAnalysis }: IdeaChamberProps) {
         <div
           className="upload-interface"
           style={{
-            display: 'none',
-            opacity: 0,
+            display: 'flex',
+            opacity: 1,
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',

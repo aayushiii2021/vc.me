@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# vc.me
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI agent for founders to help them reach their next milestone. The root app is a React + Vite frontend where founders pitch Sarah, VC.me's AI robot, and get feedback across Traction, Authority, and Funding.
 
-Currently, two official plugins are available:
+## Frontend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+By default, the frontend uses Sarah's local analysis logic. To connect it to the local backend adapter, run the API in another terminal and set `VITE_VCME_API_URL`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+python3 scripts/vcme_api.py
+VITE_VCME_API_URL=http://127.0.0.1:8787 npm run dev
 ```
+
+The frontend sends founder ideas to `POST /api/founder-analysis` and displays the returned Traction, Authority, and Funding scores.
+
+## Backend Adapter
+
+`scripts/vcme_api.py` is a lightweight local API for Sarah's founder diagnosis. It uses no external Python dependencies and exposes:
+
+- `GET /health`
+- `POST /api/founder-analysis`
+
+## RocketRide MVP
+
+RocketRide is installed in Cursor (`RocketRide.rocketride` v1.1.0). This repo holds the first pipeline for ingesting scraped VC contact JSON and enriching it with an LLM.
+
+## Pipeline
+
+`pipelines/vc_contact_enrich.pipe`
+
+```text
+dropper -> parse -> question -> prompt -> llm_gmi_cloud -> response_answers
+```
+
+- **Ingest:** Drop `data/sample_contact.json` or another contact JSON on the dropper node in the canvas, or use **Send files** from the Connection Manager.
+- **Transform:** Parse extracts text; prompt applies enrichment instructions; the LLM returns structured JSON in `answers`.
+
+## RocketRide Setup
+
+1. Reload Cursor or open this folder so the RocketRide sidebar appears.
+2. Click the RocketRide icon and deploy the Local engine.
+3. Copy `.env.example` to `.env` and set the required API key.
+4. Open `pipelines/vc_contact_enrich.pipe`.
+5. Press Play on the dropper node, then drop `data/sample_contact.json`.
+
+## Bulk Data
+
+Full scraped dataset: `../vcs-data/people.json` (large). For MVP testing, use `data/sample_contact.json` or export a small slice.
+
+## Docs
+
+Shipped with the extension under `~/.cursor/extensions/rocketride.rocketride-*/docs/` — start with `ROCKETRIDE_QUICKSTART.md`.
