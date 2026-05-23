@@ -1,30 +1,45 @@
-# VC.me Voice Backend Workflow
+# VC.me GMI Cloud Backend Workflow
 
-This is the intended production setup for Sarah as a conversational founder-readiness coach.
+Sarah should be a GMI Cloud-backed conversational founder-readiness coach.
 
 ## Product Flow
 
 1. The frontend opens a Sarah interview session.
 2. Sarah asks three questions: Traction, Authority, and Funding.
-3. Browser audio is streamed to the backend.
-4. Google Cloud Speech-to-Text returns interim and final transcripts.
-5. The backend stores the transcript by session and sends final answers to RocketRide.
-6. RocketRide runs `pipelines/founder_readiness_interview.pipe`.
-7. GMI scores the founder and returns structured JSON for the dashboard.
-8. Sarah speaks the final readout with browser speech synthesis now, or Google Cloud Text-to-Speech in production.
+3. The browser captures speech and produces the transcript for the prototype conversation.
+4. The frontend sends final transcript segments to the backend.
+5. The backend stores the interview session and sends the full transcript to GMI Cloud.
+6. GMI Cloud returns strict JSON with scores, advice, and Sarah's voice readout.
+7. The frontend renders the Traction, Authority, and Funding dashboard.
+8. Sarah speaks the readout with browser speech synthesis for now; a GMI Cloud audio node can replace this for production voice generation.
 
-## Google Products
+## GMI Cloud
 
-- **Google Cloud Speech-to-Text:** production transcription for real-time or uploaded audio. Use streaming recognition for live conversation and batch recognition for uploaded recordings.
-- **Google Cloud Text-to-Speech:** production Sarah voice output when we want consistent generated audio instead of browser speech synthesis.
-- **Cloud Run:** host the VC.me backend with HTTPS and WebSocket or streaming endpoints.
-- **Secret Manager:** store `ROCKETRIDE_GMI_CLOUD_APIKEY`, Google credentials, and future provider keys.
-- **Firestore:** store interview sessions, transcripts, scores, and follow-up tasks.
-- **Firebase Auth:** optional founder login so users can return to their dashboard.
+GMI Cloud is the required AI inference layer for Sarah. The local backend calls:
 
-## GMI
+```text
+POST https://api.gmi-serving.com/v1/chat/completions
+```
 
-Use GMI as the LLM inference layer inside RocketRide. The first scoring model can stay `deepseek-v3`, with the prompt constrained to return strict JSON:
+Required env:
+
+```bash
+GMI_API_KEY=
+GMI_MODEL=deepseek-v3
+```
+
+Optional env:
+
+```bash
+GMI_ORG_ID=
+GMI_CHAT_URL=https://api.gmi-serving.com/v1/chat/completions
+```
+
+`ROCKETRIDE_GMI_CLOUD_APIKEY` and `ROCKETRIDE_GMI_ORG_ID` are also accepted for local compatibility with the RocketRide pipeline.
+
+## Sarah JSON Contract
+
+The backend asks GMI Cloud for valid JSON only:
 
 ```json
 {
@@ -39,9 +54,15 @@ Use GMI as the LLM inference layer inside RocketRide. The first scoring model ca
 }
 ```
 
+Sarah should score only from the founder transcript:
+
+- **Traction:** quantitative market demand: revenue, active users, growth, retention, and customer engagement.
+- **Authority:** founder credibility: track record, domain expertise, recognition, advisors, and thought leadership.
+- **Funding:** capital readiness: Pre-Seed or Seed stage, runway, milestones, and unit economics.
+
 ## RocketRide Workflow
 
-Create this pipeline in RocketRide:
+RocketRide should mirror the same GMI Cloud scoring workflow visually:
 
 ```text
 dropper -> parse -> question -> prompt -> llm_gmi_cloud -> response_answers
@@ -66,9 +87,11 @@ Input payload:
 }
 ```
 
+Drop `data/sample_founder_interview.json` onto the RocketRide dropper node to test.
+
 ## Backend API Shape
 
-Current prototype:
+Current local backend:
 
 - `GET /health`
 - `GET /api/interview-questions`
@@ -77,10 +100,7 @@ Current prototype:
 - `POST /api/interview-sessions/:id/transcript`
 - `POST /api/interview-sessions/:id/analyze`
 
-Next production endpoints:
-
-- `POST /api/speech/google/stream-token` returns short-lived config for a secure backend-mediated speech stream.
-- `POST /api/sarah/voice` converts Sarah's final readout to audio with Google Cloud Text-to-Speech.
+The direct scoring endpoints call GMI Cloud when `GMI_API_KEY` or `ROCKETRIDE_GMI_CLOUD_APIKEY` is configured. Without a key, they fall back to the local deterministic scorer so the frontend can still be developed.
 
 ## Local Setup
 
@@ -91,14 +111,9 @@ npm run backend
 VITE_VCME_API_URL=http://127.0.0.1:8787 npm run dev
 ```
 
-For RocketRide:
+## Production Shape
 
-```bash
-open pipelines/founder_readiness_interview.pipe
-```
-
-Drop `data/sample_founder_interview.json` onto the dropper node.
-
-## Why This Split
-
-The browser can handle prototype speech recognition, but production should not depend on browser-only Web Speech support. The backend should own Google transcription, session storage, provider credentials, and RocketRide orchestration. The frontend should stay focused on the conversation UI and the dashboard.
+- Host the backend on a server that can keep GMI keys private.
+- Keep browser-side speech recognition for a fast MVP, or move audio handling to a GMI Cloud audio model or dedicated endpoint when we choose the exact model.
+- Store interview sessions, transcripts, scores, and Sarah readouts in the app database.
+- Use RocketRide for the founder-readiness workflow canvas and GMI Cloud for inference.

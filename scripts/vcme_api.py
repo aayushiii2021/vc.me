@@ -4,13 +4,37 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from urllib.parse import urlparse
 from uuid import uuid4
 from datetime import datetime, timezone
 
 
+def load_dotenv(path=".env"):
+    if not os.path.isfile(path):
+        return
+
+    with open(path, "r", encoding="utf-8") as env_file:
+        for raw_line in env_file:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
+
+
+load_dotenv()
+
 HOST = os.environ.get("VCME_API_HOST", "127.0.0.1")
 PORT = int(os.environ.get("VCME_API_PORT", "8787"))
+GMI_API_KEY = os.environ.get("GMI_API_KEY") or os.environ.get("ROCKETRIDE_GMI_CLOUD_APIKEY")
+GMI_ORG_ID = os.environ.get("GMI_ORG_ID") or os.environ.get("ROCKETRIDE_GMI_ORG_ID")
+GMI_MODEL = os.environ.get("GMI_MODEL", "deepseek-v3")
+GMI_CHAT_URL = os.environ.get("GMI_CHAT_URL", "https://api.gmi-serving.com/v1/chat/completions")
 
 INTERVIEW_QUESTIONS = [
     {
@@ -41,7 +65,42 @@ def clamp_score(score):
     return max(5, min(95, score))
 
 
-def local_analysis(idea):
+def score_value(value):
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return 0
+
+
+def normalize_analysis(payload, idea, source):
+    payload["idea"] = idea
+    payload["source"] = source
+    payload["generatedAt"] = payload.get("generatedAt") or datetime.now(timezone.utc).isoformat()
+
+    dimensions = payload.get("dimensions", {})
+    for key, fallback_title in (
+        ("traction", "Traction"),
+        ("authority", "Authority"),
+        ("funding", "Funding"),
+    ):
+        dimension = dimensions.setdefault(key, {})
+        dimension["title"] = fallback_title
+        dimension["score"] = clamp_score(score_value(dimension.get("score", 0)))
+        dimension.setdefault("subtitle", "Needs Work")
+        dimension.setdefault("description", "")
+        dimension.setdefault("tips", [])
+
+    payload["dimensions"] = dimensions
+    if "overallScore" not in payload:
+        payload["overallScore"] = round(
+            sum(dimensions[key]["score"] for key in ("traction", "authority", "funding")) / 3
+        )
+    payload["overallScore"] = clamp_score(score_value(payload["overallScore"]))
+    payload.setdefault("summary", "Sarah scored your founder readiness across Traction, Authority, and Funding.")
+    return payload
+
+
+def local_analysis(idea, source="local"):
     normalized = (idea or "Startup idea submitted").strip()
     text = normalized.lower()
 
@@ -76,7 +135,7 @@ def local_analysis(idea):
 
     return {
         "idea": normalized,
-        "source": "backend",
+        "source": source,
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "overallScore": overall,
         "summary": (
@@ -122,6 +181,74 @@ def local_analysis(idea):
     }
 
 
+def build_gmi_prompt(idea):
+    return {
+        "system": (
+            "You are Sarah, VC.me's AI readiness coach for early-stage, first-time founders. "
+            "Score only from the founder's interview transcript. Do not invent metrics."
+        ),
+        "user": f"""
+Founder interview transcript:
+
+{idea}
+
+Score the founder across:
+1. Traction — Quantitative evidence of market demand. Proof that people actually want the product, measured through revenue, active users, growth rate, retention, and customer engagement.
+2. Authority — Founder credibility and domain expertise. Evidence of track record, industry knowledge, public recognition, advisor relationships, and thought leadership.
+3. Funding — Capital readiness at the right stage. Pre-Seed is usually $10K-$500K; Seed is usually $500K-$2M. Evaluate runway, use of funds, milestones, and unit economics.
+
+Return valid JSON only. Use this exact shape:
+{{
+  "overallScore": 0,
+  "summary": "",
+  "dimensions": {{
+    "traction": {{ "title": "Traction", "subtitle": "", "score": 0, "description": "", "tips": [] }},
+    "authority": {{ "title": "Authority", "subtitle": "", "score": 0, "description": "", "tips": [] }},
+    "funding": {{ "title": "Funding", "subtitle": "", "score": 0, "description": "", "tips": [] }}
+  }},
+  "voiceReadout": ""
+}}
+""".strip(),
+    }
+
+
+def gmi_analysis(idea):
+    normalized = (idea or "Startup idea submitted").strip()
+    if not GMI_API_KEY:
+        return local_analysis(normalized, source="local")
+
+    prompt = build_gmi_prompt(normalized)
+    body = {
+        "model": GMI_MODEL,
+        "messages": [
+            {"role": "system", "content": prompt["system"]},
+            {"role": "user", "content": prompt["user"]},
+        ],
+        "temperature": 0.2,
+        "max_tokens": 2000,
+        "response_format": {"type": "json_object"},
+    }
+    headers = {
+        "Authorization": f"Bearer {GMI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    if GMI_ORG_ID:
+        headers["X-Organization-ID"] = GMI_ORG_ID
+
+    request = Request(GMI_CHAT_URL, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
+    try:
+        with urlopen(request, timeout=45) as response:
+            response_body = json.loads(response.read().decode("utf-8"))
+        content = response_body["choices"][0]["message"]["content"]
+        return normalize_analysis(json.loads(content), normalized, source="gmi")
+    except (HTTPError, URLError, TimeoutError, KeyError, IndexError, json.JSONDecodeError, ValueError) as exc:
+        fallback = local_analysis(normalized, source="local")
+        fallback["summary"] = (
+            f"GMI Cloud scoring was unavailable, so Sarah used the local fallback. Backend detail: {exc}"
+        )
+        return fallback
+
+
 class Handler(BaseHTTPRequestHandler):
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -140,7 +267,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
         if path == "/health":
-            self._send_json(200, {"ok": True, "service": "vcme-api"})
+            self._send_json(
+                200,
+                {
+                    "ok": True,
+                    "service": "vcme-api",
+                    "gmi_configured": bool(GMI_API_KEY),
+                    "gmi_model": GMI_MODEL,
+                },
+            )
         elif path == "/api/interview-questions":
             self._send_json(200, {"questions": INTERVIEW_QUESTIONS})
         else:
@@ -156,7 +291,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/founder-analysis":
-            self._send_json(200, local_analysis(payload.get("idea", "")))
+            self._send_json(200, gmi_analysis(payload.get("idea", "")))
             return
 
         if path == "/api/interview-sessions":
@@ -209,7 +344,7 @@ class Handler(BaseHTTPRequestHandler):
                     f"{question['title']}: {answers.get(question['key'], '')}"
                     for question in INTERVIEW_QUESTIONS
                 )
-                self._send_json(200, local_analysis(idea))
+                self._send_json(200, gmi_analysis(idea))
                 return
 
         self._send_json(404, {"error": "Not found"})

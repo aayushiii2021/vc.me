@@ -109,8 +109,10 @@ function Home() {
     {
       type: 'sarah',
       text:
-        analysisResult.source === 'backend'
-          ? "Backend connected. I've evaluated your Traction, Authority, and Funding potential with the VC.me analysis API."
+        analysisResult.source === 'gmi'
+          ? "GMI Cloud connected. I've evaluated your Traction, Authority, and Funding potential with Sarah's GMI scoring model."
+          : analysisResult.source === 'backend'
+            ? "Backend connected. I've evaluated your Traction, Authority, and Funding potential with the VC.me analysis API."
           : "I'm using Sarah's local analysis fallback. I've evaluated your Traction, Authority, and Funding potential, and here's the honest breakdown:",
     },
   ];
@@ -390,12 +392,12 @@ function Home() {
                 style={{
                   fontSize: '13px',
                   fontWeight: 600,
-                  color: analysisResult.source === 'backend' ? '#22c55e' : '#a855f7',
+                  color: analysisResult.source === 'gmi' ? '#22c55e' : '#a855f7',
                   letterSpacing: '3px',
                   textTransform: 'uppercase',
                 }}
               >
-              {analysisResult.source === 'backend' ? 'Backend Analysis Connected' : 'Local Sarah Analysis'}
+              {analysisResult.source === 'gmi' ? 'GMI Cloud Analysis Connected' : 'Local Sarah Analysis'}
             </span>
             <h2
               style={{

@@ -10,7 +10,7 @@ export interface FounderDimension {
 
 export interface FounderAnalysis {
   idea: string;
-  source: 'backend' | 'local';
+  source: 'gmi' | 'backend' | 'local';
   overallScore: number;
   summary: string;
   dimensions: Record<DimensionKey, FounderDimension>;
@@ -129,8 +129,7 @@ export async function analyzeFounder(idea: string): Promise<FounderAnalysis> {
       throw new Error(`Backend returned ${response.status}`);
     }
 
-    const analysis = (await response.json()) as FounderAnalysis;
-    return { ...analysis, source: 'backend' };
+    return (await response.json()) as FounderAnalysis;
   } catch (error) {
     console.warn('Falling back to local Sarah analysis:', error);
     return createLocalAnalysis(idea);
