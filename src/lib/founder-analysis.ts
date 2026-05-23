@@ -119,6 +119,10 @@ export async function analyzeFounder(idea: string): Promise<FounderAnalysis> {
   }
 
   try {
+    // Backend integration boundary:
+    // `/api/founder-analysis` currently calls GMI Cloud directly when configured.
+    // Backend team can preserve this response contract while swapping implementation
+    // to RocketRide (`founder_readiness_interview.pipe`) or a session-based analyze call.
     const response = await fetch(`${API_URL}/api/founder-analysis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

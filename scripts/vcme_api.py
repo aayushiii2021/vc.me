@@ -12,6 +12,9 @@ from datetime import datetime, timezone
 
 
 def load_dotenv(path=".env"):
+    # Backend integration note:
+    # Keep secrets server-side. This tiny loader lets local dev use `.env`, but production
+    # should inject GMI/RocketRide/Google credentials through the deployment secret manager.
     if not os.path.isfile(path):
         return
 
@@ -31,11 +34,19 @@ load_dotenv()
 
 HOST = os.environ.get("VCME_API_HOST", "127.0.0.1")
 PORT = int(os.environ.get("VCME_API_PORT", "8787"))
+# GMI Cloud is Sarah's primary inference backend.
+# Set `GMI_API_KEY` directly, or reuse RocketRide's `ROCKETRIDE_GMI_CLOUD_APIKEY`
+# so the Python API and RocketRide canvas use the same model provider.
 GMI_API_KEY = os.environ.get("GMI_API_KEY") or os.environ.get("ROCKETRIDE_GMI_CLOUD_APIKEY")
 GMI_ORG_ID = os.environ.get("GMI_ORG_ID") or os.environ.get("ROCKETRIDE_GMI_ORG_ID")
 GMI_MODEL = os.environ.get("GMI_MODEL", "deepseek-v3")
 GMI_CHAT_URL = os.environ.get("GMI_CHAT_URL", "https://api.gmi-serving.com/v1/chat/completions")
 
+# Keep this question schema in sync with:
+# - `src/sections/VoiceInterview.tsx` for the current prototype UI
+# - `pipelines/founder_readiness_interview.pipe` for the RocketRide workflow
+# When RocketRide owns orchestration, fetch these prompts from the pipeline/session config
+# instead of duplicating them in frontend and backend code.
 INTERVIEW_QUESTIONS = [
     {
         "key": "traction",
@@ -54,6 +65,10 @@ INTERVIEW_QUESTIONS = [
     },
 ]
 
+# Prototype-only in-memory session store.
+# Backend team: replace with the production database once auth exists. If Google
+# products are used for infrastructure, Firestore is a reasonable fit for sessions,
+# transcript segments, scoring outputs, and Sarah follow-up tasks.
 SESSION_STORE = {}
 
 
@@ -73,6 +88,10 @@ def score_value(value):
 
 
 def normalize_analysis(payload, idea, source):
+    # GMI/RocketRide integration boundary:
+    # Both direct GMI calls and RocketRide response_answers should pass through this
+    # normalizer before reaching the frontend. It protects the dashboard from small
+    # schema drift while the scoring prompt evolves.
     payload["idea"] = idea
     payload["source"] = source
     payload["generatedAt"] = payload.get("generatedAt") or datetime.now(timezone.utc).isoformat()
@@ -101,6 +120,9 @@ def normalize_analysis(payload, idea, source):
 
 
 def local_analysis(idea, source="local"):
+    # Development fallback only. Do not treat this as production scoring.
+    # Production scoring should come from GMI Cloud directly or through RocketRide's
+    # `llm_gmi_cloud` node in `pipelines/founder_readiness_interview.pipe`.
     normalized = (idea or "Startup idea submitted").strip()
     text = normalized.lower()
 
@@ -182,6 +204,10 @@ def local_analysis(idea, source="local"):
 
 
 def build_gmi_prompt(idea):
+    # GMI Cloud prompt contract.
+    # Backend team: if RocketRide becomes the required execution layer, move this
+    # exact rubric into the RocketRide prompt node and have this API call RocketRide
+    # instead of calling `GMI_CHAT_URL` directly.
     return {
         "system": (
             "You are Sarah, VC.me's AI readiness coach for early-stage, first-time founders. "
@@ -213,6 +239,10 @@ Return valid JSON only. Use this exact shape:
 
 
 def gmi_analysis(idea):
+    # Primary Sarah scoring path.
+    # This endpoint talks to GMI Cloud's OpenAI-compatible chat completions API.
+    # Future option: call RocketRide here and let RocketRide call GMI Cloud, which
+    # gives non-engineers a visual workflow to edit the Sarah rubric.
     normalized = (idea or "Startup idea submitted").strip()
     if not GMI_API_KEY:
         return local_analysis(normalized, source="local")
@@ -291,10 +321,16 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/founder-analysis":
+            # Current frontend path: one complete interview transcript in, Sarah score out.
+            # Keep this for simple clients and tests.
             self._send_json(200, gmi_analysis(payload.get("idea", "")))
             return
 
         if path == "/api/interview-sessions":
+            # Conversation lifecycle entrypoint.
+            # Backend team: create a durable session here and attach founder/user identity.
+            # This is also where a RocketRide run token can be created if each interview
+            # should map to a persisted RocketRide task.
             session_id = payload.get("session_id") or str(uuid4())
             SESSION_STORE[session_id] = {
                 "session_id": session_id,
@@ -324,6 +360,11 @@ class Handler(BaseHTTPRequestHandler):
             )
 
             if action == "transcript":
+                # Speech-to-text integration point.
+                # Today the browser sends final transcript text. If we add Google products
+                # from the latest I/O audio stack, stream mic audio to a backend endpoint
+                # here and transcribe with Gemini Live API / Gemini native audio, then append
+                # the final transcript segment into this same session shape.
                 question_key = payload.get("question_key")
                 transcript = (payload.get("transcript") or "").strip()
                 if question_key and transcript:
@@ -339,6 +380,10 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             if action == "analyze":
+                # RocketRide/GMI handoff point.
+                # Option A: call `gmi_analysis` directly (current implementation).
+                # Option B: send `answers` to `pipelines/founder_readiness_interview.pipe`
+                # and return its `response_answers` payload after normalization.
                 answers = payload.get("answers") or session.get("answers") or {}
                 idea = "\n\n".join(
                     f"{question['title']}: {answers.get(question['key'], '')}"

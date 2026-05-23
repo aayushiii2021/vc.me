@@ -13,6 +13,20 @@ Sarah should be a GMI Cloud-backed conversational founder-readiness coach.
 7. The frontend renders the Traction, Authority, and Funding dashboard.
 8. Sarah speaks the readout with browser speech synthesis for now; a GMI Cloud audio node can replace this for production voice generation.
 
+## Voice Layer
+
+Current MVP:
+
+- Browser Web Speech API handles speech-to-text.
+- Browser speech synthesis reads Sarah's questions and final summary.
+
+Backend integration points are already commented in:
+
+- `src/sections/VoiceInterview.tsx`
+- `scripts/vcme_api.py`
+
+If we need Google products for the voice layer, use the Google I/O-era Gemini Live API / Gemini 2.5 native audio path for real-time voice conversation. Keep it behind the backend so API keys and model selection never ship to the browser. GMI Cloud should remain Sarah's scoring and advice model unless the product decision changes.
+
 ## GMI Cloud
 
 GMI Cloud is the required AI inference layer for Sarah. The local backend calls:

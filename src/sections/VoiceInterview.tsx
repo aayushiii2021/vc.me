@@ -94,6 +94,11 @@ export default function VoiceInterview({ onStartAnalysis }: VoiceInterviewProps)
   useEffect(() => {
     if (!speechSupported) return;
 
+    // Prototype speech-to-text path:
+    // Web Speech keeps the MVP browser-only. Production should post audio/transcript
+    // segments to `/api/interview-sessions/:id/transcript`. If the backend team adds
+    // Google I/O-era Gemini Live API / native audio, replace this browser recognizer
+    // with a backend-mediated stream so credentials and model selection stay server-side.
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) return;
 
@@ -122,6 +127,11 @@ export default function VoiceInterview({ onStartAnalysis }: VoiceInterviewProps)
   }, [speechSupported]);
 
   const speak = useCallback((text: string) => {
+    // Prototype text-to-speech path:
+    // Browser speech synthesis is good enough for local demos. For a production Sarah
+    // voice, the backend can synthesize audio with a provider endpoint and return an
+    // audio URL/blob; Gemini 2.5 native audio from Google I/O is the Google option to
+    // evaluate if we want a more natural conversational voice layer.
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -166,6 +176,12 @@ export default function VoiceInterview({ onStartAnalysis }: VoiceInterviewProps)
 
   const submitInterview = useCallback(() => {
     stopListening();
+    // Backend handoff:
+    // This currently sends one joined transcript to `/api/founder-analysis`.
+    // The session API is already scaffolded for a richer flow:
+    // 1. POST /api/interview-sessions
+    // 2. POST /api/interview-sessions/:id/transcript for each answer
+    // 3. POST /api/interview-sessions/:id/analyze to call GMI Cloud/RocketRide
     const payload = questions
       .map((question) => `${question.title}: ${answers[question.key] || draft}`)
       .join('\n\n');
