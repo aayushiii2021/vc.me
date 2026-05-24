@@ -1,19 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router';
-import { BadgeDollarSign, Check, Mic, MicOff, Send, Shield, TrendingUp, Volume2 } from 'lucide-react';
-import YCTopbar from '../components/YCTopbar';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { ArrowLeft, ArrowRight, Check, Mic, MicOff, X } from 'lucide-react';
 import { analyzeFounder } from '../lib/founder-analysis';
-import { saveAnalysis, saveAnswers, loadAnswers, type QuizAnswers } from '../lib/analysis-store';
-
-type QuestionKey = 'traction' | 'authority' | 'funding';
-
-interface InterviewQuestion {
-  key: QuestionKey;
-  title: string;
-  prompt: string;
-  helper: string;
-  icon: ReactNode;
-}
+import {
+  emptyPlaybook,
+  loadPlaybookAnswers,
+  savePlaybookAnswers,
+  saveAnalysis,
+  type PlaybookAnswers,
+} from '../lib/analysis-store';
 
 interface SpeechRecognitionEventLike {
   results: {
@@ -43,139 +38,149 @@ declare global {
   }
 }
 
-const questions: InterviewQuestion[] = [
+type MultiKey = 'stage' | 'priority';
+
+type Step =
+  | { type: 'multi'; key: MultiKey; title: string; sub: string; options: string[] }
+  | { type: 'story'; key: 'story'; title: string; sub: string };
+
+const steps: Step[] = [
   {
-    key: 'traction',
-    title: 'Traction',
-    prompt:
-      'What proof do you have that people want this product? Cover revenue, active users, growth, retention, pilots, waitlists, or customer engagement.',
-    helper: 'Sarah is listening for quantitative evidence of market demand.',
-    icon: <TrendingUp size={18} style={{ color: '#FF6600' }} />,
+    type: 'multi',
+    key: 'stage',
+    title: 'Where are you today?',
+    sub: 'Pick the closest fit.',
+    options: [
+      'Just an idea',
+      'Building a prototype or MVP',
+      'Live with early users',
+      'Generating revenue',
+    ],
   },
   {
-    key: 'authority',
-    title: 'Authority',
-    prompt:
-      'Why are you the right founder to build this? Cover your domain expertise, track record, advisors, recognition, or audience.',
-    helper: 'Sarah is listening for founder credibility and founder-market fit.',
-    icon: <Shield size={18} style={{ color: '#FF6600' }} />,
+    type: 'multi',
+    key: 'priority',
+    title: 'What matters most in the next 90 days?',
+    sub: 'Pick one or more.',
+    options: [
+      'Build credibility & profile',
+      'Find first customers',
+      'Meet angels or VCs',
+      'All of the above',
+    ],
   },
   {
-    key: 'funding',
-    title: 'Funding',
-    prompt:
-      'How much capital do you need, what stage are you raising for, what runway does it buy, and what milestones will it unlock?',
-    helper: 'Sarah is listening for capital readiness, runway, milestones, and unit economics.',
-    icon: <BadgeDollarSign size={18} style={{ color: '#FF6600' }} />,
+    type: 'story',
+    key: 'story',
+    title: 'Tell us what you’re building, who it helps, and why it matters now.',
+    sub: 'Talk or type — 30 seconds is plenty.',
   },
 ];
 
 export default function Quiz() {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<QuizAnswers>(
-    () => loadAnswers() || { traction: '', authority: '', funding: '' }
+  const [idx, setIdx] = useState(0);
+  const [answers, setAnswers] = useState<PlaybookAnswers>(
+    () => loadPlaybookAnswers() || emptyPlaybook
   );
-  const [draft, setDraft] = useState(answers[questions[0].key] || '');
+  const [submitting, setSubmitting] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
-  const currentQuestion = questions[currentIndex];
-  const completedCount = questions.filter((q) => answers[q.key].trim()).length;
+  const current = steps[idx];
+  const isLast = idx === steps.length - 1;
+  const isFirst = idx === 0;
+  const progress = ((idx + 1) / steps.length) * 100;
 
   const speechSupported = useMemo(
-    () => Boolean(window.SpeechRecognition || window.webkitSpeechRecognition),
+    () => typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition),
     []
   );
+
+  useEffect(() => {
+    savePlaybookAnswers(answers);
+  }, [answers]);
 
   useEffect(() => {
     if (!speechSupported) return;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) return;
-
     const recognition = new Recognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
     recognition.onresult = (event) => {
       let transcript = '';
-      for (let index = 0; index < event.results.length; index += 1) {
-        transcript += event.results[index][0].transcript;
+      for (let i = 0; i < event.results.length; i += 1) {
+        transcript += event.results[i][0].transcript;
       }
-      setDraft(transcript.trim());
+      setAnswers((prev) => ({ ...prev, story: transcript.trim() }));
     };
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => {
       setIsListening(false);
-      setSpeechError('Sarah could not access the microphone. You can still type your answer.');
+      setSpeechError('Could not access the microphone. You can still type.');
     };
     recognitionRef.current = recognition;
-
     return () => {
       recognition.stop();
       recognitionRef.current = null;
     };
   }, [speechSupported]);
 
-  const speak = useCallback((text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.94;
-    utterance.pitch = 1;
-    window.speechSynthesis.speak(utterance);
-  }, []);
-
-  const startListening = useCallback(() => {
+  const toggleListening = useCallback(() => {
     if (!recognitionRef.current) {
-      setSpeechError('Speech recognition is not available here. Type your answer instead.');
+      setSpeechError('Speech recognition is not available here. Type instead.');
       return;
     }
-    setSpeechError('');
-    setDraft(answers[currentQuestion.key]);
-    setIsListening(true);
-    recognitionRef.current.start();
-  }, [answers, currentQuestion.key]);
-
-  const stopListening = useCallback(() => {
-    recognitionRef.current?.stop();
-    setIsListening(false);
-  }, []);
-
-  const saveCurrentAnswer = useCallback(() => {
-    setAnswers((prev) => {
-      const next = { ...prev, [currentQuestion.key]: draft.trim() };
-      saveAnswers(next);
-      return next;
-    });
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((index) => index + 1);
-      setDraft(answers[questions[currentIndex + 1].key] || '');
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setSpeechError('');
+      setIsListening(true);
+      recognitionRef.current.start();
     }
-  }, [answers, currentIndex, currentQuestion.key, draft]);
+  }, [isListening]);
 
-  const goToQuestion = useCallback(
-    (index: number) => {
-      stopListening();
-      setCurrentIndex(index);
-      setDraft(answers[questions[index].key] || '');
+  const toggleOption = useCallback(
+    (key: MultiKey, value: string) => {
+      setAnswers((prev) => {
+        const list = prev[key];
+        const exists = list.includes(value);
+        return {
+          ...prev,
+          [key]: exists ? list.filter((v) => v !== value) : [...list, value],
+        };
+      });
     },
-    [answers, stopListening]
+    []
   );
 
-  const submitInterview = useCallback(async () => {
-    stopListening();
-    const finalAnswers: QuizAnswers = {
-      ...answers,
-      [currentQuestion.key]: draft.trim() || answers[currentQuestion.key],
-    };
-    saveAnswers(finalAnswers);
-    const payload = questions
-      .map((q) => `${q.title}: ${finalAnswers[q.key]}`)
-      .join('\n\n');
+  const canAdvance = useMemo(() => {
+    if (current.type === 'multi') {
+      return answers[current.key].length > 0;
+    }
+    return answers.story.trim().length > 0;
+  }, [answers, current]);
+
+  const goNext = useCallback(async () => {
+    if (!canAdvance) return;
+    if (!isLast) {
+      setIdx((i) => i + 1);
+      return;
+    }
     setSubmitting(true);
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
+    const payload = [
+      `Story: ${answers.story}`,
+      `Stage: ${answers.stage.join(', ')}`,
+      `90-day priority: ${answers.priority.join(', ')}`,
+    ].join('\n\n');
     try {
       const result = await analyzeFounder(payload);
       saveAnalysis(result);
@@ -183,165 +188,394 @@ export default function Quiz() {
     } finally {
       setSubmitting(false);
     }
-  }, [answers, currentQuestion.key, draft, navigate, stopListening]);
+  }, [answers, canAdvance, isLast, isListening, navigate]);
 
-  const hasDraft = draft.trim().length > 0;
-  const canSubmit = completedCount === questions.length || (completedCount === questions.length - 1 && hasDraft);
+  const goBack = useCallback(() => {
+    if (isFirst) return;
+    setIdx((i) => i - 1);
+  }, [isFirst]);
+
+  useEffect(() => {
+    if (current.type !== 'multi') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        goNext();
+        return;
+      }
+      const key = e.key.toUpperCase();
+      if (key.length === 1 && key >= 'A' && key <= 'Z') {
+        const index = key.charCodeAt(0) - 65;
+        const opt = current.options[index];
+        if (opt) {
+          e.preventDefault();
+          toggleOption(current.key, opt);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [current, goNext, toggleOption]);
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', color: '#000' }}>
-      <YCTopbar />
-
-      <main className="yc-container" style={{ padding: '32px 16px 80px' }}>
-        <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>Voice quiz</h1>
-          <p style={{ fontSize: 13, color: 'var(--yc-text-muted)' }}>
-            {completedCount}/3 answers captured. Sarah will score you after all three.
-          </p>
-        </div>
-
+    <div
+      style={{
+        background: 'var(--yc-bg)',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        color: 'var(--yc-text)',
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          background: 'var(--yc-surface)',
+          zIndex: 20,
+        }}
+      >
         <div
-          className="voice-interview-grid"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(220px, 0.7fr) minmax(0, 1.3fr)',
-            gap: 16,
+            height: '100%',
+            width: `${progress}%`,
+            background: 'var(--yc-orange)',
+            transition: 'width 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        />
+      </div>
+
+      {/* Minimal header */}
+      <header
+        style={{
+          padding: '20px 24px 0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            color: 'var(--yc-orange)',
+            fontWeight: 600,
+            fontSize: 20,
+            letterSpacing: '-0.02em',
           }}
         >
-          {/* Question nav */}
-          <aside className="yc-card" style={{ padding: 16 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--yc-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Questions
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {questions.map((q, index) => {
-                const isActive = index === currentIndex;
-                const isComplete = Boolean(answers[q.key].trim());
-                return (
-                  <button
-                    key={q.key}
-                    onClick={() => goToQuestion(index)}
+          vc.me
+        </Link>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            fontSize: 13,
+            color: 'var(--yc-text-muted)',
+          }}
+        >
+          <span>
+            {String(idx + 1).padStart(2, '0')}{' '}
+            <span style={{ opacity: 0.5 }}>/ {String(steps.length).padStart(2, '0')}</span>
+          </span>
+          <Link
+            to="/"
+            aria-label="Exit"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              color: 'var(--yc-text-muted)',
+            }}
+          >
+            <X size={18} />
+          </Link>
+        </div>
+      </header>
+
+      {/* Step content (centered) */}
+      <main
+        key={idx}
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          maxWidth: 640,
+          width: '100%',
+          margin: '0 auto',
+          padding: '40px 24px 140px',
+          textAlign: 'center',
+          animation: 'vcStep 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: 13,
+            color: 'var(--yc-orange)',
+            fontWeight: 600,
+            letterSpacing: 1.5,
+            textTransform: 'uppercase',
+            marginBottom: 14,
+          }}
+        >
+          Question {idx + 1}
+        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(28px, 4.2vw, 46px)',
+            fontWeight: 500,
+            lineHeight: 1.15,
+            letterSpacing: '-0.02em',
+            margin: 0,
+            maxWidth: 640,
+          }}
+        >
+          {current.title}
+        </h1>
+        <p
+          style={{
+            marginTop: 14,
+            fontSize: 16,
+            color: 'var(--yc-text-muted)',
+            maxWidth: 520,
+          }}
+        >
+          {current.sub}
+        </p>
+
+        {current.type === 'multi' && (
+          <div
+            style={{
+              marginTop: 32,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              width: '100%',
+              maxWidth: 520,
+            }}
+          >
+            {current.options.map((opt, i) => {
+              const selected = answers[current.key].includes(opt);
+              const letter = String.fromCharCode(65 + i);
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => toggleOption(current.key, opt)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    width: '100%',
+                    padding: '16px 18px',
+                    borderRadius: 12,
+                    border: selected
+                      ? '1.5px solid var(--yc-orange)'
+                      : '1.5px solid var(--yc-border)',
+                    background: selected ? '#FFF1E3' : '#ffffff',
+                    color: 'var(--yc-text)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    transition: 'background 0.12s ease, border-color 0.12s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!selected) {
+                      (e.currentTarget as HTMLButtonElement).style.background = 'var(--yc-surface)';
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--yc-text-muted)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!selected) {
+                      (e.currentTarget as HTMLButtonElement).style.background = '#ffffff';
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--yc-border)';
+                    }
+                  }}
+                >
+                  <span
                     style={{
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 8,
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: `1px solid ${isActive ? '#FF6600' : 'var(--yc-border)'}`,
-                      background: isActive ? '#FFF4EC' : '#fff',
-                      color: '#000',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontFamily: 'Verdana, Geneva, sans-serif',
-                      fontSize: 13,
-                      fontWeight: isActive ? 700 : 400,
+                      justifyContent: 'center',
+                      width: 26,
+                      height: 26,
+                      borderRadius: 5,
+                      background: selected ? 'var(--yc-orange)' : 'var(--yc-surface)',
+                      color: selected ? '#ffffff' : 'var(--yc-text)',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      flexShrink: 0,
                     }}
                   >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {q.icon}
-                      <span>
-                        {index + 1}. {q.title}
-                      </span>
-                    </span>
-                    {isComplete && <Check size={14} style={{ color: '#16a34a' }} />}
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
+                    {letter}
+                  </span>
+                  <span style={{ flex: 1 }}>{opt}</span>
+                  {selected && (
+                    <Check size={16} style={{ color: 'var(--yc-orange)', flexShrink: 0 }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-          {/* Active question */}
-          <section className="yc-card">
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: '#FF6600',
-                textTransform: 'uppercase',
-                letterSpacing: 2,
-              }}
-            >
-              Question {currentIndex + 1} of {questions.length} — {currentQuestion.title}
-            </div>
-
-            <h2 style={{ fontSize: 22, fontWeight: 700, marginTop: 8, lineHeight: 1.3 }}>
-              {currentQuestion.prompt}
-            </h2>
-
-            <p style={{ marginTop: 10, color: 'var(--yc-text-muted)', fontSize: 13 }}>
-              {currentQuestion.helper}
-            </p>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 18 }}>
-              <button onClick={() => speak(currentQuestion.prompt)} className="yc-btn-secondary">
-                <Volume2 size={16} />
-                Ask out loud
-              </button>
-              <button
-                onClick={isListening ? stopListening : startListening}
-                className="yc-btn-primary"
-                style={isListening ? { background: '#b91c1c', borderColor: '#b91c1c' } : undefined}
-              >
-                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
-                {isListening ? 'Stop recording' : 'Start recording'}
-              </button>
-            </div>
-
-            {speechError && (
-              <p style={{ marginTop: 12, color: '#b91c1c', fontSize: 13 }}>{speechError}</p>
-            )}
-
+        {current.type === 'story' && (
+          <div style={{ marginTop: 28, width: '100%', maxWidth: 640, textAlign: 'left' }}>
             <textarea
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder="Your answer will appear here as Sarah transcribes it. You can also type or edit it."
-              className="yc-input"
+              autoFocus
+              value={answers.story}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, story: e.target.value }))}
+              placeholder="What it is, who it’s for, why now…"
               style={{
-                marginTop: 18,
+                width: '100%',
                 minHeight: 180,
                 resize: 'vertical',
-                lineHeight: 1.6,
+                padding: '20px 22px',
+                borderRadius: 16,
+                border: '1px solid var(--yc-border)',
+                background: '#ffffff',
+                color: 'var(--yc-text)',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 17,
+                lineHeight: 1.55,
+                outline: 'none',
               }}
             />
-
             <div
               style={{
-                marginTop: 16,
+                marginTop: 14,
                 display: 'flex',
-                justifyContent: 'space-between',
-                gap: 12,
+                gap: 10,
+                alignItems: 'center',
                 flexWrap: 'wrap',
+                justifyContent: 'center',
               }}
             >
               <button
-                onClick={saveCurrentAnswer}
-                disabled={!hasDraft}
-                className="yc-btn-secondary"
+                type="button"
+                onClick={toggleListening}
                 style={{
-                  opacity: hasDraft ? 1 : 0.5,
-                  cursor: hasDraft ? 'pointer' : 'not-allowed',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 18px',
+                  borderRadius: 999,
+                  border: '1px solid var(--yc-border)',
+                  background: isListening ? '#b91c1c' : 'transparent',
+                  color: isListening ? '#fff' : 'var(--yc-text)',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s ease, color 0.15s ease',
                 }}
               >
-                <Check size={16} />
-                {currentIndex < questions.length - 1 ? 'Save & next' : 'Save answer'}
+                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                {isListening ? 'Stop' : 'Use mic'}
               </button>
-              <button
-                onClick={submitInterview}
-                disabled={!canSubmit || submitting}
-                className="yc-btn-primary"
-                style={{
-                  opacity: !canSubmit || submitting ? 0.5 : 1,
-                  cursor: !canSubmit || submitting ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <Send size={16} />
-                {submitting ? 'Analyzing…' : 'Analyze with Sarah'}
-              </button>
+              <span style={{ fontSize: 13, color: 'var(--yc-text-muted)' }}>
+                Both work — talk or type.
+              </span>
             </div>
-          </section>
-        </div>
+            {speechError && (
+              <p style={{ marginTop: 10, color: '#b91c1c', fontSize: 13, textAlign: 'center' }}>
+                {speechError}
+              </p>
+            )}
+          </div>
+        )}
       </main>
+
+      {/* Bottom nav */}
+      <footer
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '16px 24px',
+          background: 'linear-gradient(to top, var(--yc-bg) 60%, rgba(251, 247, 240, 0))',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <button
+          type="button"
+          onClick={goBack}
+          disabled={isFirst}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '10px 16px',
+            borderRadius: 999,
+            border: 'none',
+            background: 'transparent',
+            color: isFirst ? 'transparent' : 'var(--yc-text-muted)',
+            cursor: isFirst ? 'default' : 'pointer',
+            fontSize: 14,
+            fontWeight: 500,
+            pointerEvents: isFirst ? 'none' : 'auto',
+          }}
+        >
+          <ArrowLeft size={16} />
+          Back
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {current.type === 'multi' && (
+            <span style={{ fontSize: 13, color: 'var(--yc-text-muted)' }}>
+              Press{' '}
+              <kbd
+                style={{
+                  background: 'var(--yc-surface)',
+                  border: '1px solid var(--yc-border)',
+                  borderRadius: 4,
+                  padding: '1px 6px',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 12,
+                }}
+              >
+                Enter
+              </kbd>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={!canAdvance || submitting}
+            className="yc-btn-primary"
+            style={{
+              opacity: !canAdvance || submitting ? 0.4 : 1,
+              cursor: !canAdvance || submitting ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {submitting ? 'Generating…' : isLast ? 'Generate playbook' : 'Continue'}
+            <ArrowRight size={16} />
+          </button>
+        </div>
+      </footer>
+
+      <style>{`
+        @keyframes vcStep {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
