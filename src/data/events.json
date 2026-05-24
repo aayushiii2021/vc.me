@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "city": "San Francisco",
+    "name": "Google I/O Kickoff: Pre-World Cup Hack ⚽",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/nf/c40f0171-50aa-4b35-a509-ba7a230fd60e.png",
+    "date": "2026-05-22T18:00:00",
+    "price": "Free (Waitlist)",
+    "location": "Embarcadero, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 2,
+    "city": "San Francisco",
+    "name": "How to AI Pill Your Company — by Decagon x a16z x Accel",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/nx/504c9cf6-a112-440a-bd36-0a9beea3d9c9.png",
+    "date": "2026-05-27T17:30:00",
+    "price": "Free",
+    "location": "China Basin, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 3,
+    "city": "San Francisco",
+    "name": "Hard Problems Night for Agent Builders",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/q4/249c71f3-cc6f-4cd9-9fd0-83a50e895e0e.png",
+    "date": "2026-05-28T19:00:00",
+    "price": "Free",
+    "location": "600 Townsend St, SoMa, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 4,
+    "city": "San Francisco",
+    "name": "☕️ Codex Community Hackathon — San Francisco #5",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/1b/a63471a1-eb2d-4586-93fa-e2badd1f568d.png",
+    "date": "2026-05-31T10:00:00",
+    "price": "Free",
+    "location": "Stonestown, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 5,
+    "city": "San Francisco",
+    "name": "HeyGen's \"Infinitely Me\" Pop-Up",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/event-covers/0p/428a27a6-ead0-4e87-9574-5b00c354ac20.png",
+    "date": "2026-06-03T14:00:00",
+    "price": "Free",
+    "location": "Culinary Artistas, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 6,
+    "city": "San Francisco",
+    "name": "Physical AI Co-working & Office Hours ☕️ by Savant & Boost VC",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/vz/0a689352-a4c9-4c01-80ac-9ce9438b689c.png",
+    "date": "2026-06-05T09:00:00",
+    "price": "Free (Waitlist)",
+    "location": "Mission District, San Francisco, CA",
+    "luma_url": "https://lu.ma/sf"
+  },
+  {
+    "id": 7,
+    "city": "New York",
+    "name": "Agentic Engineering Hack",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/0a/903ac39b-ab76-4e28-ab63-14fcb92806b8.png",
+    "date": "2026-05-23T09:00:00",
+    "price": "Free (Waitlist)",
+    "location": "Midtown South, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 8,
+    "city": "New York",
+    "name": "Scaling Enterprise AI Agents: Security, Privacy & Real-World Deployment",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/kt/9036cb8f-ab41-4cc1-a7b1-07c0093a4f4b.png",
+    "date": "2026-05-27T18:30:00",
+    "price": "Free",
+    "location": "Midtown South, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 9,
+    "city": "New York",
+    "name": "May AI Engineers: Devs & Drinks",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/0i/9dea3b87-a909-4875-b2f2-ae2585cc6bea.png",
+    "date": "2026-05-29T19:00:00",
+    "price": "Free",
+    "location": "Lower East Side, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 10,
+    "city": "New York",
+    "name": "Light x Lovable x McKinsey QB Finance Hackathon",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/event-covers/4s/cdf1195c-9cab-4176-b040-55fa791ae64e.png",
+    "date": "2026-05-30T08:00:00",
+    "price": "Free",
+    "location": "McKinsey & Company, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 11,
+    "city": "New York",
+    "name": "Design Meetup x Ramp NYC: Off The Record",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/t6/16948196-6ca5-4e70-a33d-d55be4dc0f5c.png",
+    "date": "2026-06-02T18:00:00",
+    "price": "Free (Waitlist)",
+    "location": "Manhattan, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 12,
+    "city": "New York",
+    "name": "Sip & Paint Minis: All Levels Welcome",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/event-covers/3p/0bedf1d7-0b84-42c4-a77e-2d5c713c81ab.png",
+    "date": "2026-06-04T18:30:00",
+    "price": "$38",
+    "location": "Welcome to Chinatown, New York, NY",
+    "luma_url": "https://lu.ma/nyc"
+  },
+  {
+    "id": 13,
+    "city": "Los Angeles",
+    "name": "LA Agentic AI Meetup",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/ot/6c7bb8d1-cb28-4c6e-8dc8-4916dfc786a5.png",
+    "date": "2026-05-24T17:00:00",
+    "price": "Free",
+    "location": "Gulp Restaurant & Brew Co, Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 14,
+    "city": "Los Angeles",
+    "name": "Future Vision XPRIZE — An Evening at Range Media Partners",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/event-covers/is/589b3de3-0081-4ccf-a5bd-3b5a2e949483.jpg",
+    "date": "2026-05-28T19:00:00",
+    "price": "Free",
+    "location": "Pico, Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 15,
+    "city": "Los Angeles",
+    "name": "Lovable Future Founder Series — LA: Tech Together Edition",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/gallery-images/kv/a55055cc-f7b9-41f4-87f4-666abc5152b0.png",
+    "date": "2026-06-01T15:00:00",
+    "price": "Free",
+    "location": "Product.ai, Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 16,
+    "city": "Los Angeles",
+    "name": "Ceramic Wall Decor Workshop with Cera Sera Studio",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/tv/ee2c7f0a-0cc7-4815-b5f1-f8d49b10c49f.jpg",
+    "date": "2026-06-03T11:00:00",
+    "price": "$78",
+    "location": "Echo Park, Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 17,
+    "city": "Los Angeles",
+    "name": "GenBattle LA: Film Competition & Premiere",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/lh/b145c44d-f326-4a5a-9cd8-339e81b0dc54.png",
+    "date": "2026-06-05T19:30:00",
+    "price": "Free",
+    "location": "Venice, Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 18,
+    "city": "Los Angeles",
+    "name": "Caspy & Co: Vol V. featuring Late, Jiho, Acid Rescues",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/23/058e5f76-adcc-4fce-8492-0cfa373b5874.jpg",
+    "date": "2026-06-06T22:00:00",
+    "price": "$23",
+    "location": "Northeast Los Angeles, CA",
+    "luma_url": "https://lu.ma/la"
+  },
+  {
+    "id": 19,
+    "city": "Miami",
+    "name": "Cursor Miami Hackathon",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/rr/bd878e8b-26c7-42a7-a7bc-f400997c60ec.png",
+    "date": "2026-05-24T09:00:00",
+    "price": "Free",
+    "location": "Wynwood Art District, Miami, FL",
+    "luma_url": "https://lu.ma/miami"
+  },
+  {
+    "id": 20,
+    "city": "Miami",
+    "name": "TikTok for Business Presents: Built to Grow — Miami",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/pi/525e128d-fed7-46e6-a9a6-00f1c3ac2a15.png",
+    "date": "2026-05-27T11:00:00",
+    "price": "Free",
+    "location": "Wynwood, Miami, FL",
+    "luma_url": "https://lu.ma/miami"
+  },
+  {
+    "id": 21,
+    "city": "Miami",
+    "name": "Miami Swim Week® The Shows: Sunblock Model Casting Pool Party",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/d3/a6409de6-f96c-4e3d-ac3d-c3aa08fb35b4.png",
+    "date": "2026-05-30T16:00:00",
+    "price": "Free (Invite Only)",
+    "location": "Strawberry Moon Pool, Miami Beach, FL",
+    "luma_url": "https://lu.ma/miami"
+  },
+  {
+    "id": 22,
+    "city": "Miami",
+    "name": "Backgammon Social x The Moore — Tournament Night",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/event-covers/30/3d2dfe93-1f28-4f5a-8901-d70c1c0de7e8.jpg",
+    "date": "2026-06-01T19:00:00",
+    "price": "$15",
+    "location": "The Moore, Miami, FL",
+    "luma_url": "https://lu.ma/miami"
+  },
+  {
+    "id": 23,
+    "city": "Miami",
+    "name": "Visionaries After Dark ✨ Dinner Series by House of Vibration",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/jc/5fed7ae7-709b-4e51-b8b0-8db125b5f9cf.webp",
+    "date": "2026-06-04T20:00:00",
+    "price": "Free",
+    "location": "The Greenhouse Restaurant & Bar, Miami, FL",
+    "luma_url": "https://lu.ma/miami"
+  },
+  {
+    "id": 24,
+    "city": "Miami",
+    "name": "Childhoods Dream Arts Festival (Public Opening)",
+    "picture": "https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=400,height=400/uploads/m3/8cc5f027-4ab6-49d3-889b-7edba1a1047a.jpg",
+    "date": "2026-06-06T10:00:00",
+    "price": "$10",
+    "location": "11712 SW 128th Pl, Miami, FL",
+    "luma_url": "https://lu.ma/miami"
+  }
+]

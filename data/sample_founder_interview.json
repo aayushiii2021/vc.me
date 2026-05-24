@@ -1,0 +1,10 @@
+{
+  "session_id": "demo-founder-001",
+  "founder_name": "First-time founder",
+  "startup_name": "VC.me Demo",
+  "answers": {
+    "traction": "We have 12 paying customers, 34 percent month-over-month revenue growth, and 71 percent week-four retention from our first pilots.",
+    "authority": "I spent six years building workflow software for seed founders, publish weekly investor CRM teardown notes, and have two former seed investors advising us.",
+    "funding": "We are raising a 750K seed round for 20 months of runway to hit 100 paying customers, prove CAC payback, and reach 80K MRR."
+  }
+}
