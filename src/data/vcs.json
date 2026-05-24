@@ -1,0 +1,639 @@
+[
+  {
+    "id": 1,
+    "name": "Andreessen Horowitz (a16z)",
+    "logo": "https://logo.clearbit.com/a16z.com",
+    "website": "https://a16z.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$500K – $25M",
+    "thesis": "Invests in bold founders building software that transforms major industries. Strong focus on AI infrastructure, developer tools, and the future of work.",
+    "why_good_fit": "a16z has a dedicated AI fund and actively backs AI-native GTM tools. Their portfolio includes companies reinventing sales and marketing workflows with AI.",
+    "contacts": [
+      {
+        "name": "Martin Casado",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/martincasado",
+        "email": "martin@a16z.com"
+      },
+      {
+        "name": "Sarah Wang",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/sarah-wang-vc",
+        "email": "swang@a16z.com"
+      },
+      {
+        "name": "Anjney Midha",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/anjneymidha",
+        "email": "anjney@a16z.com"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Sequoia Capital",
+    "logo": "https://logo.clearbit.com/sequoiacap.com",
+    "website": "https://www.sequoiacap.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B", "Growth"],
+    "typical_check": "$1M – $30M",
+    "thesis": "Partners with founders from idea through IPO. Thesis spans AI, enterprise software, consumer, and fintech. Known for long-term conviction bets.",
+    "why_good_fit": "Sequoia's Arc program actively scouts early AI companies. They've backed multiple AI-powered outbound and sales intelligence platforms.",
+    "contacts": [
+      {
+        "name": "Konstantine Buhler",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/konstantinebuhler",
+        "email": "konstantine@sequoiacap.com"
+      },
+      {
+        "name": "Jess Lee",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/jesskiaha",
+        "email": "jess@sequoiacap.com"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "First Round Capital",
+    "logo": "https://logo.clearbit.com/firstround.com",
+    "website": "https://firstround.com",
+    "location": "San Francisco, CA",
+    "stage": ["Pre-Seed", "Seed"],
+    "typical_check": "$500K – $5M",
+    "thesis": "Seed-stage specialist focused on software and internet companies. Deep operational support network and community for founders.",
+    "why_good_fit": "First Round is the go-to seed fund for B2B SaaS and AI tooling. Their portfolio companies are heavy users of AI-driven sales automation.",
+    "contacts": [
+      {
+        "name": "Brett Berson",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/brettberson",
+        "email": "brett@firstround.com"
+      },
+      {
+        "name": "Hayley Leibson",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/hleibson",
+        "email": "hayley@firstround.com"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "General Catalyst",
+    "logo": "https://logo.clearbit.com/generalcatalyst.com",
+    "website": "https://www.generalcatalyst.com",
+    "location": "Cambridge, MA",
+    "stage": ["Seed", "Series A", "Series B", "Growth"],
+    "typical_check": "$1M – $20M",
+    "thesis": "Backs founders building enduring, mission-driven companies. Deep focus on AI, enterprise, healthcare, and climate. Emphasizes 'responsible innovation'.",
+    "why_good_fit": "GC is aggressively investing in AI-native workflow tools for sales and marketing teams. Their enterprise-friendly approach aligns well with B2B go-to-market.",
+    "contacts": [
+      {
+        "name": "Niko Bonatsos",
+        "title": "Managing Director",
+        "linkedin": "https://www.linkedin.com/in/nikobonatsos",
+        "email": "niko@generalcatalyst.com"
+      },
+      {
+        "name": "Jade Mandel",
+        "title": "Investor",
+        "linkedin": "https://www.linkedin.com/in/jademandel",
+        "email": "jade@generalcatalyst.com"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Lightspeed Venture Partners",
+    "logo": "https://logo.clearbit.com/lsvp.com",
+    "website": "https://lsvp.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $15M",
+    "thesis": "Global multistage firm investing across enterprise, consumer, fintech, and health. Strong AI thesis with dedicated AI fund.",
+    "why_good_fit": "Lightspeed has backed numerous AI-first GTM and sales tools. Their enterprise SaaS network provides warm intro paths to pilot customers.",
+    "contacts": [
+      {
+        "name": "Gaurav Gupta",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/gauravgupta1",
+        "email": "gaurav@lsvp.com"
+      },
+      {
+        "name": "Mercedes Bent",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/mercedesbent",
+        "email": "mercedes@lsvp.com"
+      },
+      {
+        "name": "Arsham Memarzadeh",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/arshamm",
+        "email": "arsham@lsvp.com"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Accel",
+    "logo": "https://logo.clearbit.com/accel.com",
+    "website": "https://www.accel.com",
+    "location": "Palo Alto, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $20M",
+    "thesis": "Early-stage focus on enterprise software, security, and consumer. Invests globally with offices in London and Bangalore. Strong track record in B2B SaaS.",
+    "why_good_fit": "Accel has a long history of backing sales and marketing infrastructure companies. Their Eurozone network is a plus for international expansion.",
+    "contacts": [
+      {
+        "name": "Ping Li",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/pingli",
+        "email": "pli@accel.com"
+      },
+      {
+        "name": "Vas Natarajan",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/vasnatarajan",
+        "email": "vas@accel.com"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Greylock Partners",
+    "logo": "https://logo.clearbit.com/greylock.com",
+    "website": "https://greylock.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $15M",
+    "thesis": "Enterprise-first fund with deep roots in developer tools, AI, and networked products. Founders-first culture with extensive talent network.",
+    "why_good_fit": "Greylock invested in LinkedIn and understands professional network data deeply — highly relevant to AI-driven outreach tools leveraging contact intelligence.",
+    "contacts": [
+      {
+        "name": "Seth Rosenberg",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/sethrosenberg",
+        "email": "seth@greylock.com"
+      },
+      {
+        "name": "Saam Motamedi",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/saammotamedi",
+        "email": "saam@greylock.com"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Bessemer Venture Partners",
+    "logo": "https://logo.clearbit.com/bvp.com",
+    "website": "https://www.bvp.com",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A", "Series B", "Growth"],
+    "typical_check": "$1M – $25M",
+    "thesis": "Cloud-first investor known for 'anti-portfolio' transparency. Deep expertise in vertical SaaS, security, and AI applications for the enterprise.",
+    "why_good_fit": "BVP publishes detailed cloud benchmarks and is a trusted partner for B2B SaaS founders. Their roadmap actively includes AI-augmented sales and prospecting tools.",
+    "contacts": [
+      {
+        "name": "Mary D'Onofrio",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/marydonofrio",
+        "email": "mdonofrio@bvp.com"
+      },
+      {
+        "name": "Elliott Robinson",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/elliottrobinson",
+        "email": "erobinson@bvp.com"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Emergence Capital",
+    "logo": "https://logo.clearbit.com/emcap.com",
+    "website": "https://www.emcap.com",
+    "location": "San Mateo, CA",
+    "stage": ["Series A", "Series B"],
+    "typical_check": "$5M – $20M",
+    "thesis": "Exclusively focused on enterprise cloud and the future of work. Coined the term 'cloud computing' and backed Salesforce, Zoom, and Veeva.",
+    "why_good_fit": "Emergence is the canonical enterprise SaaS fund. AI-powered sales tools sit squarely in their 'coaching networks' thesis for transforming how teams work.",
+    "contacts": [
+      {
+        "name": "Jake Saper",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/jakesaper",
+        "email": "jake@emcap.com"
+      },
+      {
+        "name": "Carlotta Siniscalco",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/carlottasiniscalco",
+        "email": "carlotta@emcap.com"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Craft Ventures",
+    "logo": "https://logo.clearbit.com/craftventures.com",
+    "website": "https://www.craftventures.com",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A"],
+    "typical_check": "$500K – $10M",
+    "thesis": "Founded by David Sacks (ex-PayPal/Yammer/Zenefits). Focus on B2B SaaS, AI applications, and enterprise productivity. Operationally heavy value-add.",
+    "why_good_fit": "David Sacks is one of the most vocal advocates for AI-native sales tools. Craft actively helps portfolio companies implement AI-driven GTM strategies.",
+    "contacts": [
+      {
+        "name": "David Sacks",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/davidsacks",
+        "email": "david@craftventures.com"
+      },
+      {
+        "name": "Bryan Rosenblatt",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/bryanrosenblatt",
+        "email": "bryan@craftventures.com"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Point Nine Capital",
+    "logo": "https://logo.clearbit.com/pointninecap.com",
+    "website": "https://www.pointninecap.com",
+    "location": "Berlin, Germany",
+    "stage": ["Pre-Seed", "Seed"],
+    "typical_check": "$300K – $3M",
+    "thesis": "Seed specialist exclusively focused on SaaS and marketplaces. Deep domain expertise in sales tools, CRMs, and B2B workflows across Europe and the US.",
+    "why_good_fit": "Point Nine backed Zendesk, Pipedrive, and Typeform early. They understand sales stack deeply and are bullish on AI-first replacements for legacy tools.",
+    "contacts": [
+      {
+        "name": "Christoph Janz",
+        "title": "Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/christophjanz",
+        "email": "cjanz@pointninecap.com"
+      },
+      {
+        "name": "Ricardo Sequerra",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/ricardosequerra",
+        "email": "ricardo@pointninecap.com"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Redpoint Ventures",
+    "logo": "https://logo.clearbit.com/redpoint.com",
+    "website": "https://www.redpoint.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $15M",
+    "thesis": "Focuses on enterprise and consumer internet. Strong track record backing developer tools and infrastructure. Running dedicated GTM AI thesis.",
+    "why_good_fit": "Redpoint's 'GTM Genius' initiative tracks every AI tool in the sales and marketing stack — they're actively looking for the next breakout in AI-powered prospecting.",
+    "contacts": [
+      {
+        "name": "Tomasz Tunguz",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/tomasztunguz",
+        "email": "ttunguz@redpoint.com"
+      },
+      {
+        "name": "Elliot Geidt",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/elliottgeidt",
+        "email": "egeidt@redpoint.com"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Khosla Ventures",
+    "logo": "https://logo.clearbit.com/khoslaventures.com",
+    "website": "https://www.khoslaventures.com",
+    "location": "Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$500K – $15M",
+    "thesis": "High-conviction bets on AI, deep tech, and enterprise transformation. Vinod Khosla is an outspoken AI bull — believes AI will replace most knowledge work.",
+    "why_good_fit": "KV is one of the most aggressive AI investors. They're specifically looking for companies that use AI to 10x productivity in white-collar workflows like sales.",
+    "contacts": [
+      {
+        "name": "Sven Strohband",
+        "title": "Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/svenstrohband",
+        "email": "sven@khoslaventures.com"
+      },
+      {
+        "name": "Ansaf Kareem",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/ansafkareem",
+        "email": "ansaf@khoslaventures.com"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Felicis Ventures",
+    "logo": "https://logo.clearbit.com/felicis.com",
+    "website": "https://www.felicis.com",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A"],
+    "typical_check": "$500K – $8M",
+    "thesis": "Invests in outlier founders redefining large markets. Known for early bets in Canva, Shopify, and Credit Karma. Increasingly AI-focused.",
+    "why_good_fit": "Felicis has backed multiple AI workflow tools targeting SMBs. Their network of revenue-generating portfolio companies is valuable for early enterprise pilots.",
+    "contacts": [
+      {
+        "name": "Aydin Senkut",
+        "title": "Founder & Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/aydin",
+        "email": "aydin@felicis.com"
+      },
+      {
+        "name": "Niki Pezeshki",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/nikipezeshki",
+        "email": "niki@felicis.com"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Insight Partners",
+    "logo": "https://logo.clearbit.com/insightpartners.com",
+    "website": "https://www.insightpartners.com",
+    "location": "New York, NY",
+    "stage": ["Series A", "Series B", "Growth"],
+    "typical_check": "$10M – $75M",
+    "thesis": "Growth-stage specialist in high-growth software and internet companies. ScaleUp program provides hands-on GTM support for portfolio companies.",
+    "why_good_fit": "Insight's ScaleUp methodology is specifically built for B2B SaaS. They help portfolio companies build repeatable sales motions — a natural fit for an AI-powered outreach platform.",
+    "contacts": [
+      {
+        "name": "Rebecca Liu-Doyle",
+        "title": "Managing Director",
+        "linkedin": "https://www.linkedin.com/in/rebeccaliu-doyle",
+        "email": "rliudoyle@insightpartners.com"
+      },
+      {
+        "name": "Teddie Wardi",
+        "title": "Managing Director",
+        "linkedin": "https://www.linkedin.com/in/teddiewardi",
+        "email": "twardi@insightpartners.com"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "GV (Google Ventures)",
+    "logo": "https://logo.clearbit.com/gv.com",
+    "website": "https://www.gv.com",
+    "location": "Mountain View, CA",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $20M",
+    "thesis": "Alphabet's venture arm. Access to Google's AI/ML resources, infrastructure credits, and distribution. Invests across all stages and sectors.",
+    "why_good_fit": "GV portfolio companies get preferential access to Google Workspace integrations and Google Cloud AI APIs — valuable for an email-heavy outreach product.",
+    "contacts": [
+      {
+        "name": "Terri Burns",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/tcburns",
+        "email": "tburns@gv.com"
+      },
+      {
+        "name": "Abe Othman",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/abeothman",
+        "email": "aothman@gv.com"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Benchmark",
+    "logo": "https://logo.clearbit.com/benchmark.com",
+    "website": "https://www.benchmark.com",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A"],
+    "typical_check": "$1M – $10M",
+    "thesis": "Small equal-partnership model. Every partner is fully engaged with every investment. Backs category-defining companies from the earliest stages.",
+    "why_good_fit": "Benchmark is legendary for early product-market fit conviction. They backed Twitter, Uber, and Snap when unproven — exactly the kind of early bet needed here.",
+    "contacts": [
+      {
+        "name": "Miles Grimshaw",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/milesgrimshaw",
+        "email": "miles@benchmark.com"
+      },
+      {
+        "name": "Chetan Puttagunta",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/chetanputtagunta",
+        "email": "chetan@benchmark.com"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Index Ventures",
+    "logo": "https://logo.clearbit.com/indexventures.com",
+    "website": "https://www.indexventures.com",
+    "location": "San Francisco, CA / London, UK",
+    "stage": ["Seed", "Series A", "Series B"],
+    "typical_check": "$1M – $20M",
+    "thesis": "Global fund with dual US-Europe presence. Invests in enterprise, fintech, and consumer. Deep playbook for scaling B2B from early traction to global.",
+    "why_good_fit": "Index has a dedicated team for AI-native software and recently published a thesis on AI agents replacing outbound SDR teams — directly aligned.",
+    "contacts": [
+      {
+        "name": "Mark Goldberg",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/markgoldbergvc",
+        "email": "mark@indexventures.com"
+      },
+      {
+        "name": "Sofia Dolfe",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/sofiadolfe",
+        "email": "sofia@indexventures.com"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Founders Fund",
+    "logo": "https://logo.clearbit.com/foundersfund.com",
+    "website": "https://foundersfund.com",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A", "Growth"],
+    "typical_check": "$1M – $30M",
+    "thesis": "Peter Thiel's fund. Makes contrarian bets on companies building technologies most investors overlook. Strong anti-consensus stance on AI.",
+    "why_good_fit": "Founders Fund is drawn to AI companies replacing entire job categories. AI-powered outbound that replaces full SDR teams is exactly the type of monopoly-scale vision they back.",
+    "contacts": [
+      {
+        "name": "Trae Stephens",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/traestephens",
+        "email": "trae@foundersfund.com"
+      },
+      {
+        "name": "Delian Asparouhov",
+        "title": "Principal",
+        "linkedin": "https://www.linkedin.com/in/delian",
+        "email": "delian@foundersfund.com"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Battery Ventures",
+    "logo": "https://logo.clearbit.com/battery.com",
+    "website": "https://www.battery.com",
+    "location": "Boston, MA / Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B", "Growth"],
+    "typical_check": "$1M – $30M",
+    "thesis": "Multistage fund focused on enterprise software, cloud infrastructure, and AI. Known for deep technical diligence and long hold periods.",
+    "why_good_fit": "Battery has a strong GTM playbook for B2B SaaS and an active thesis around AI tools for revenue teams. Their portfolio includes multiple sales engagement platforms.",
+    "contacts": [
+      {
+        "name": "Dhruv Bhargava",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/dhruvbhargava",
+        "email": "dbhargava@battery.com"
+      },
+      {
+        "name": "Jesse Feldman",
+        "title": "Principal",
+        "linkedin": "https://www.linkedin.com/in/jessefeldman",
+        "email": "jfeldman@battery.com"
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "NEA",
+    "logo": "https://logo.clearbit.com/nea.com",
+    "website": "https://www.nea.com",
+    "location": "Chevy Chase, MD / Menlo Park, CA",
+    "stage": ["Seed", "Series A", "Series B", "Growth"],
+    "typical_check": "$2M – $25M",
+    "thesis": "One of the largest and oldest VC firms. Backs enterprise software, healthcare, and consumer. AI is now the centerpiece of their investment thesis.",
+    "why_good_fit": "NEA's enterprise software team has deep relationships in sales ops, RevOps, and CRO functions at F500 companies — perfect for validating and distributing an AI outreach tool.",
+    "contacts": [
+      {
+        "name": "Rick Yang",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/rickyangvc",
+        "email": "ryang@nea.com"
+      },
+      {
+        "name": "Vanessa Larco",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/vanessalarco",
+        "email": "vlarco@nea.com"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Base10 Partners",
+    "logo": "https://logo.clearbit.com/base10.vc",
+    "website": "https://base10.vc",
+    "location": "San Francisco, CA",
+    "stage": ["Seed", "Series A"],
+    "typical_check": "$500K – $7M",
+    "thesis": "Invests in automation of the 'real economy' — sectors like logistics, healthcare, finance, and education being transformed by AI. Diversity-forward LP base.",
+    "why_good_fit": "Base10's automation thesis maps directly to AI replacing manual outbound processes. They're seeking founders automating high-value repetitive workflows in B2B.",
+    "contacts": [
+      {
+        "name": "Adeyemi Ajao",
+        "title": "Co-Founder & Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/adeyemiajao",
+        "email": "yemi@base10.vc"
+      },
+      {
+        "name": "TJ Nahigian",
+        "title": "Co-Founder & Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/tjnahigian",
+        "email": "tj@base10.vc"
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "name": "SV Angel",
+    "logo": "https://logo.clearbit.com/svangel.com",
+    "website": "https://svangel.com",
+    "location": "San Francisco, CA",
+    "stage": ["Pre-Seed", "Seed"],
+    "typical_check": "$100K – $1M",
+    "thesis": "High-volume seed fund co-investing alongside top-tier VCs. Ron Conway's network provides unmatched intro access across Silicon Valley.",
+    "why_good_fit": "SV Angel is the best door-opener in early-stage. Getting them in the round signals quality to follow-on investors and unlocks intros to Sequoia, a16z, and others.",
+    "contacts": [
+      {
+        "name": "Ron Conway",
+        "title": "Founder",
+        "linkedin": "https://www.linkedin.com/in/ronconway",
+        "email": "ron@svangel.com"
+      },
+      {
+        "name": "David Lee",
+        "title": "Managing Partner",
+        "linkedin": "https://www.linkedin.com/in/davidleesf",
+        "email": "david@svangel.com"
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Initialized Capital",
+    "logo": "https://logo.clearbit.com/initialized.com",
+    "website": "https://initialized.com",
+    "location": "San Francisco, CA",
+    "stage": ["Pre-Seed", "Seed"],
+    "typical_check": "$250K – $3M",
+    "thesis": "Co-founded by Garry Tan (now YC president). Seed-stage focus on founders with unique insight. Heavy bias toward AI-native software companies.",
+    "why_good_fit": "Initialized has deep YC ties and actively co-invests with YC batches. Strong portfolio overlap with B2B AI tools making them a natural fit for an AI outreach platform.",
+    "contacts": [
+      {
+        "name": "Brett Gibson",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/brettgibson",
+        "email": "brett@initialized.com"
+      },
+      {
+        "name": "Kim-Mai Cutler",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/kimmaicutler",
+        "email": "kimmai@initialized.com"
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Coatue Management",
+    "logo": "https://logo.clearbit.com/coatue.com",
+    "website": "https://www.coatue.com",
+    "location": "New York, NY",
+    "stage": ["Series A", "Series B", "Growth"],
+    "typical_check": "$10M – $100M",
+    "thesis": "Technology-focused crossover fund (public + private). Data-driven investment approach using proprietary analytics. Aggressively deploying into AI.",
+    "why_good_fit": "Coatue leads large rounds for AI companies with clear revenue traction. Once an AI outreach product hits $1M ARR, Coatue is well-positioned to lead the Series A at scale.",
+    "contacts": [
+      {
+        "name": "Caryn Marooney",
+        "title": "General Partner",
+        "linkedin": "https://www.linkedin.com/in/carynmarooney",
+        "email": "cmarooney@coatue.com"
+      },
+      {
+        "name": "Matt Mazzeo",
+        "title": "Partner",
+        "linkedin": "https://www.linkedin.com/in/mattmazzeo",
+        "email": "mmazzeo@coatue.com"
+      }
+    ]
+  }
+]

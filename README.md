@@ -1,70 +1,68 @@
 # vc.me
 
-AI agent for founders to help them reach their next milestone. The root app is a React + Vite speech-to-text frontend where founders talk to Sarah, VC.me's AI robot, and get feedback across Traction, Authority, and Funding.
+> Turn first-time founders into fundable ones — in 60 seconds.
 
-## Frontend
+## The problem
+
+A first-time founder without a network, paying customers, or VC relationships is stuck in three places at once. They don't know what to do next on **authority**, on **traction**, or on **fundraising** — and they're embarrassed to ask the basic questions.
+
+There's no shortage of advice on the internet. There's no playbook for *their* startup, today.
+
+## What vc.me does
+
+Answer three questions about your startup. We generate a complete founder playbook across **four dimensions**, streamed live so you watch it come together:
+
+| Tab | What you get |
+|---|---|
+| **Authority** | A diagnosis of the one conversation you should own. A ready-to-post LinkedIn post (with image). A grouped list of **25 podcasts, YouTube channels, and newsletters** to pitch — each with a custom-written pitch you can copy. |
+| **Traction** | **18 hand-curated events** in SF, NY, LA, and Miami, scored for AI engineer / agent builder density. Each row tells you *why this one* and links to RSVP. |
+| **Funding** | **25 VCs matched to your thesis.** Click any row to open a Gmail-style draft — subject + body personalized to the partner and the firm's published thesis. Send in one click. |
+| **Advise** | **Three 90-second video clips** tailored to your story. Two are pre-generated; the third you can ask Sarah to film on demand. |
+
+## How it works
+
+Three technologies are stacked to make the live generation feel real.
+
+```mermaid
+flowchart LR
+    Q[3-question Quiz] --> G[Gemini 3.5 Flash]
+    G --> R[RocketRide Pipeline]
+    R --> M[GMI Cloud Inference]
+    M --> P[Streaming Playbook]
+    P --> A[Authority]
+    P --> T[Traction]
+    P --> F[Funding]
+    P --> V[Advise]
+
+    classDef tech fill:#FF6600,stroke:#FF6600,color:#fff,font-weight:bold;
+    class G,R,M tech;
+```
+
+| Layer | Role |
+|---|---|
+| **Gemini 3.5 Flash** | Drafts every piece of generated copy — diagnosis, LinkedIn post, 25 personalized cold emails, video scripts. Chosen for sub-second latency on short prompts. |
+| **RocketRide Pipeline** | Orchestrates the multi-stage flow (quiz → match → draft → render). Each playbook tab is a pipeline that can fan out in parallel and stream partial results back to the UI. |
+| **GMI Cloud Inference** | Runs Sarah's scoring + matching layer — founder thesis ↔ VCs, events, podcasts — at low cost per match so the demo can score 80+ entities live without breaking the bank. |
+
+## Run it
 
 ```bash
 npm install
 npm run dev
+# open http://localhost:3000
 ```
 
-By default, the frontend uses Sarah's local analysis logic. To connect it to the local backend adapter, run the API in another terminal and set `VITE_VCME_API_URL`:
+`/` is a headerless hero with the 3-question voice quiz CTA. `/quiz` is the typeform-style interview. `/results` is the live-generating playbook with all four tabs unlocked.
+
+### Optional backend
 
 ```bash
-GMI_API_KEY=your_gmi_key \
-python3 scripts/vcme_api.py
+GMI_API_KEY=your_gmi_key python3 scripts/vcme_api.py
 VITE_VCME_API_URL=http://127.0.0.1:8787 npm run dev
 ```
 
-Sarah prompts founders through three questions, transcribes or accepts typed answers, sends the interview to `POST /api/founder-analysis`, speaks the final readout, and displays a Traction, Authority, and Funding dashboard.
+Without the backend, the app uses a local fallback so the demo always works.
 
-See [docs/backend-workflow.md](docs/backend-workflow.md) for the GMI Cloud and RocketRide backend architecture.
+## Stack
 
-## Backend Adapter
-
-`scripts/vcme_api.py` is a lightweight local API for Sarah's founder diagnosis. It calls GMI Cloud when `GMI_API_KEY` or `ROCKETRIDE_GMI_CLOUD_APIKEY` is configured, and uses a local fallback only for development without credentials. It uses no external Python dependencies and exposes:
-
-- `GET /health`
-- `GET /api/interview-questions`
-- `POST /api/founder-analysis`
-- `POST /api/interview-sessions`
-- `POST /api/interview-sessions/:id/transcript`
-- `POST /api/interview-sessions/:id/analyze`
-
-## RocketRide MVP
-
-RocketRide is installed in Cursor (`RocketRide.rocketride` v1.1.0). This repo holds the first pipeline for ingesting scraped VC contact JSON and enriching it with an LLM.
-
-## Pipeline
-
-Contact enrichment:
-
-`pipelines/vc_contact_enrich.pipe`
-
-Founder readiness interview:
-
-`pipelines/founder_readiness_interview.pipe`
-
-```text
-dropper -> parse -> question -> prompt -> llm_gmi_cloud -> response_answers
-```
-
-- **Founder readiness ingest:** Drop `data/sample_founder_interview.json` onto `pipelines/founder_readiness_interview.pipe`.
-- **Founder readiness transform:** Parse extracts text; prompt applies Sarah's scoring rubric; GMI Cloud returns structured JSON in `answers`.
-
-## RocketRide Setup
-
-1. Reload Cursor or open this folder so the RocketRide sidebar appears.
-2. Click the RocketRide icon and deploy the Local engine.
-3. Copy `.env.example` to `.env` and set the required API key.
-4. Open `pipelines/vc_contact_enrich.pipe`.
-5. Press Play on the dropper node, then drop `data/sample_contact.json`.
-
-## Bulk Data
-
-Full scraped dataset: `../vcs-data/people.json` (large). For MVP testing, use `data/sample_contact.json` or export a small slice.
-
-## Docs
-
-Shipped with the extension under `~/.cursor/extensions/rocketride.rocketride-*/docs/` — start with `ROCKETRIDE_QUICKSTART.md`.
+React 19 · Vite · react-router · TypeScript · Source Serif 4 + Inter · Light-mode YC palette (cream `#FBF7F0`, orange `#FF6600`).

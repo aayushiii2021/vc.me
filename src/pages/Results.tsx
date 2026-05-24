@@ -1,275 +1,367 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { TrendingUp, Shield, DollarSign, Volume2, RotateCcw, Share2 } from 'lucide-react';
-import YCTopbar from '../components/YCTopbar';
-import { createLocalAnalysis, type DimensionKey, type FounderAnalysis } from '../lib/founder-analysis';
-import { clearAll, loadAnalysis } from '../lib/analysis-store';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { ArrowLeft, Award, BarChart3, Check, DollarSign, Lightbulb, Sparkles } from 'lucide-react';
+import AuthorityPlaybook from '../components/AuthorityPlaybook';
+import TractionPlaybook from '../components/TractionPlaybook';
+import FundingPlaybook from '../components/FundingPlaybook';
+import AdvisePlaybook from '../components/AdvisePlaybook';
+import { founder } from '../lib/playbook-data';
 
-const dimensionMeta: Record<DimensionKey, { icon: React.ReactNode }> = {
-  traction: { icon: <TrendingUp size={18} /> },
-  authority: { icon: <Shield size={18} /> },
-  funding: { icon: <DollarSign size={18} /> },
-};
+type TabKey = 'authority' | 'traction' | 'funding' | 'advise';
+
+interface TabDef {
+  key: TabKey;
+  label: string;
+  icon: React.ReactNode;
+  description: string;
+}
+
+const tabs: TabDef[] = [
+  {
+    key: 'authority',
+    label: 'Authority',
+    icon: <Award size={16} />,
+    description: 'How you become the credible voice for your market.',
+  },
+  {
+    key: 'traction',
+    label: 'Traction',
+    icon: <BarChart3 size={16} />,
+    description: 'How you find your first customers and prove demand.',
+  },
+  {
+    key: 'funding',
+    label: 'Funding',
+    icon: <DollarSign size={16} />,
+    description: 'Who funds you next, and exactly how to reach them.',
+  },
+  {
+    key: 'advise',
+    label: 'Advise',
+    icon: <Lightbulb size={16} />,
+    description: 'The week-by-week plan for the next 90 days.',
+  },
+];
 
 export default function Results() {
-  const navigate = useNavigate();
-  const [analysis, setAnalysis] = useState<FounderAnalysis | null>(() => loadAnalysis());
-  const [activeTab, setActiveTab] = useState<DimensionKey>('traction');
-
-  useEffect(() => {
-    if (!analysis) {
-      setAnalysis(createLocalAnalysis('No interview submitted yet — preview only'));
+  const initialTab = (() => {
+    if (typeof window === 'undefined') return 'authority' as TabKey;
+    const param = new URLSearchParams(window.location.search).get('tab');
+    if (param && ['authority', 'traction', 'funding', 'advise'].includes(param)) {
+      return param as TabKey;
     }
-  }, [analysis]);
+    return 'authority' as TabKey;
+  })();
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [completed, setCompleted] = useState<Record<TabKey, boolean>>({
+    authority: false,
+    traction: false,
+    funding: false,
+    advise: false,
+  });
 
-  const speakSummary = useCallback((data: FounderAnalysis) => {
-    if (!window.speechSynthesis) return;
-    const entries = Object.entries(data.dimensions) as Array<
-      [DimensionKey, FounderAnalysis['dimensions'][DimensionKey]]
-    >;
-    const weakest = entries.reduce((lowest, current) =>
-      current[1].score < lowest[1].score ? current : lowest
-    )[1];
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(
-      `Sarah's readout. Your overall score is ${data.overallScore} out of 100. ${data.summary} Your weakest area is ${weakest.title}, scoring ${weakest.score}. Start there: ${weakest.tips[0]}.`
-    );
-    utterance.rate = 0.92;
-    window.speechSynthesis.speak(utterance);
-  }, []);
-
-  if (!analysis) {
-    return (
-      <div style={{ background: '#fff', minHeight: '100vh' }}>
-        <YCTopbar />
-        <main className="yc-container" style={{ padding: '40px 16px' }}>
-          Loading…
-        </main>
-      </div>
-    );
-  }
-
-  const dimensionEntries = (Object.keys(analysis.dimensions) as DimensionKey[]).map((key) => ({
-    key,
-    ...analysis.dimensions[key],
-  }));
-  const activeInsight = dimensionEntries.find((d) => d.key === activeTab) || dimensionEntries[0];
-
-  const sourceLabel =
-    analysis.source === 'gmi'
-      ? 'GMI Cloud Analysis'
-      : analysis.source === 'backend'
-        ? 'VC.me API Analysis'
-        : 'Local Sarah Analysis';
-
-  const handleReset = () => {
-    clearAll();
-    navigate('/quiz');
+  const markComplete = (key: TabKey) => {
+    setCompleted((prev) => ({ ...prev, [key]: true }));
   };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', color: '#000' }}>
-      <YCTopbar />
-
-      <main className="yc-container" style={{ padding: '32px 16px 80px' }}>
-        <div style={{ marginBottom: 24 }}>
-          <span
+    <div style={{ background: 'var(--yc-bg)', minHeight: '100vh' }}>
+      {/* Top header */}
+      <header
+        style={{
+          padding: '20px 24px',
+          borderBottom: '1px solid var(--yc-border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'var(--yc-bg)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            fontFamily: 'var(--font-serif)',
+            color: 'var(--yc-orange)',
+            fontWeight: 600,
+            fontSize: 20,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          vc.me
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 13, color: 'var(--yc-text-muted)' }}>
+            Playbook for{' '}
+            <strong style={{ color: 'var(--yc-text)' }}>{founder.name}</strong>
+          </span>
+          <Link
+            to="/quiz"
             style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: '#FF6600',
-              letterSpacing: 2,
-              textTransform: 'uppercase',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 13,
+              color: 'var(--yc-text-muted)',
+              textDecoration: 'none',
             }}
           >
-            {sourceLabel}
-          </span>
-          <h1 style={{ fontSize: 28, fontWeight: 700, marginTop: 6 }}>
-            What you're missing
+            <ArrowLeft size={14} />
+            Retake
+          </Link>
+        </div>
+      </header>
+
+      <main className="yc-container" style={{ padding: '32px 16px 96px' }}>
+        {/* Hero */}
+        <div style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '4px 12px',
+              background: 'rgba(255,102,0,0.1)',
+              color: 'var(--yc-orange)',
+              borderRadius: 999,
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: 1.2,
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}
+          >
+            <Sparkles size={12} />
+            Generating live
+          </div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(32px, 4.4vw, 48px)',
+              fontWeight: 500,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              margin: 0,
+            }}
+          >
+            {founder.name}'s founder playbook
           </h1>
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: 15,
+              color: 'var(--yc-text-muted)',
+              maxWidth: 540,
+            }}
+          >
+            4 dimensions, scored against your story. Click any tab to jump straight in.
+          </p>
         </div>
 
-        {/* Overall score panel */}
-        <section
-          className="yc-card"
+        {/* Tabs */}
+        <div
+          role="tablist"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'minmax(180px, 240px) 1fr',
-            gap: 24,
-            alignItems: 'center',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 8,
             marginBottom: 24,
           }}
         >
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                width: 140,
-                height: 140,
-                margin: '0 auto',
-                borderRadius: '50%',
-                border: '4px solid #FF6600',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span style={{ fontSize: 40, fontWeight: 800, color: '#FF6600', lineHeight: 1 }}>
-                {analysis.overallScore}
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--yc-text-muted)' }}>/ 100</span>
-            </div>
-            <div
-              style={{
-                marginTop: 10,
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: 2,
-                textTransform: 'uppercase',
-                color: 'var(--yc-text-muted)',
-              }}
-            >
-              Overall readiness
-            </div>
-          </div>
-          <div>
-            <p style={{ fontSize: 15, lineHeight: 1.6 }}>{analysis.summary}</p>
-            <div style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button onClick={() => speakSummary(analysis)} className="yc-btn-secondary">
-                <Volume2 size={16} />
-                Replay Sarah
-              </button>
-              <button onClick={handleReset} className="yc-btn-secondary">
-                <RotateCcw size={16} />
-                Run another interview
-              </button>
-              <button className="yc-btn-primary">
-                <Share2 size={16} />
-                Share readout
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* Dimension tabs */}
-        <section className="yc-card sarah-dashboard" style={{ padding: 0 }}>
-          <div
-            className="sarah-dashboard-tabs"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-              borderBottom: '1px solid var(--yc-border)',
-            }}
-          >
-            {dimensionEntries.map((data, idx) => {
-              const isActive = activeTab === data.key;
-              return (
-                <button
-                  key={data.key}
-                  onClick={() => setActiveTab(data.key)}
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            const isComplete = completed[tab.key];
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  textAlign: 'left',
+                  padding: '14px 16px',
+                  borderRadius: 12,
+                  border: isActive
+                    ? '1.5px solid var(--yc-orange)'
+                    : '1.5px solid var(--yc-border)',
+                  background: isActive ? '#FFF1E3' : '#fff',
+                  color: 'var(--yc-text)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'background 0.15s ease, border-color 0.15s ease',
+                }}
+              >
+                <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
                     gap: 8,
-                    minHeight: 56,
-                    border: 'none',
-                    borderRight: idx === 2 ? 'none' : '1px solid var(--yc-border)',
-                    background: isActive ? '#FFF4EC' : '#fff',
-                    color: '#000',
                     fontSize: 14,
-                    fontWeight: isActive ? 800 : 600,
-                    cursor: 'pointer',
-                    fontFamily: 'Verdana, Geneva, sans-serif',
+                    fontWeight: 700,
                   }}
                 >
-                  <span style={{ color: '#FF6600' }}>{dimensionMeta[data.key].icon}</span>
-                  {data.title}
-                  <span style={{ color: '#FF6600' }}>{data.score}</span>
-                </button>
-              );
-            })}
-          </div>
+                  <span style={{ color: isActive ? 'var(--yc-orange)' : 'inherit' }}>
+                    {tab.icon}
+                  </span>
+                  {tab.label}
+                  <span style={{ marginLeft: 'auto', display: 'inline-flex' }}>
+                    {isComplete ? (
+                      <Check size={14} style={{ color: '#16A34A' }} />
+                    ) : (
+                      <span
+                        aria-hidden
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          border: '2px solid var(--yc-orange)',
+                          borderRightColor: 'transparent',
+                          animation: 'vcSpin2 0.9s linear infinite',
+                        }}
+                      />
+                    )}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--yc-text-muted)',
+                    marginTop: 4,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {tab.description}
+                </div>
+              </button>
+            );
+          })}
+        </div>
 
-          <div
-            className="sarah-dashboard-panel"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(160px, 0.35fr) minmax(0, 0.65fr)',
-              gap: 24,
-              padding: 24,
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: '50%',
-                  border: '4px solid #FF6600',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <span style={{ color: '#FF6600', fontSize: 28, fontWeight: 800 }}>
-                  {activeInsight.score}
-                </span>
-                <span style={{ color: 'var(--yc-text-muted)', fontSize: 11 }}>/ 100</span>
-              </div>
-              <h3 style={{ marginTop: 14, fontSize: 18, fontWeight: 700 }}>
-                {activeInsight.subtitle}
-              </h3>
-            </div>
-
-            <div>
-              <p style={{ fontSize: 14, lineHeight: 1.7 }}>{activeInsight.description}</p>
-              <div
-                style={{
-                  marginTop: 20,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: 1.4,
-                  textTransform: 'uppercase',
-                  color: 'var(--yc-text-muted)',
-                }}
-              >
-                What to change next
-              </div>
-              <ol
-                style={{
-                  marginTop: 10,
-                  paddingLeft: 20,
-                  display: 'grid',
-                  gap: 8,
-                  fontSize: 14,
-                  lineHeight: 1.55,
-                }}
-              >
-                {activeInsight.tips.map((tip) => (
-                  <li key={tip}>{tip}</li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </section>
-
-        <div style={{ marginTop: 32, textAlign: 'center' }}>
-          <Link to="/quiz" style={{ color: '#FF6600', textDecoration: 'underline', fontSize: 13 }}>
-            Retake the quiz →
-          </Link>
+        {/* Tab content */}
+        <div role="tabpanel">
+          {activeTab === 'authority' && (
+            <AuthorityPlaybook onComplete={() => markComplete('authority')} />
+          )}
+          {activeTab === 'traction' && (
+            <TractionPlaybook onComplete={() => markComplete('traction')} />
+          )}
+          {activeTab === 'funding' && (
+            <FundingPlaybook onComplete={() => markComplete('funding')} />
+          )}
+          {activeTab === 'advise' && (
+            <AdvisePlaybook onComplete={() => markComplete('advise')} />
+          )}
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--yc-border)', padding: '16px 0', marginTop: 40 }}>
-        <div
-          className="yc-container"
-          style={{ fontSize: 12, color: 'var(--yc-text-muted)', textAlign: 'center' }}
-        >
-          Not financial advice. Sarah is an AI coach for founder readiness.
-        </div>
-      </footer>
+      <style>{`
+        @keyframes vcSpin2 { to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
+  );
+}
+
+function PlaceholderPlaybook({
+  tabKey,
+  title,
+  subtitle,
+  onComplete,
+}: {
+  tabKey: TabKey;
+  title: string;
+  subtitle: string;
+  onComplete: () => void;
+}) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      setReady(true);
+      onComplete();
+    }, 2400);
+    return () => window.clearTimeout(t);
+  }, [tabKey, onComplete]);
+
+  return (
+    <div
+      style={{
+        background: '#fff',
+        border: '1px solid var(--yc-border)',
+        borderRadius: 16,
+        padding: 40,
+        textAlign: 'center',
+      }}
+    >
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 14px',
+          background: 'var(--yc-surface)',
+          border: '1px solid var(--yc-border)',
+          borderRadius: 999,
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: 1.2,
+          textTransform: 'uppercase',
+          color: 'var(--yc-text-muted)',
+        }}
+      >
+        <Sparkles size={12} style={{ color: 'var(--yc-orange)' }} />
+        {ready ? 'Draft ready' : 'Generating'}
+      </div>
+      <h2
+        style={{
+          marginTop: 16,
+          fontFamily: 'var(--font-serif)',
+          fontSize: 32,
+          fontWeight: 500,
+          letterSpacing: '-0.01em',
+        }}
+      >
+        {title}
+      </h2>
+      <p
+        style={{
+          marginTop: 8,
+          fontSize: 15,
+          color: 'var(--yc-text-muted)',
+          maxWidth: 480,
+          marginInline: 'auto',
+        }}
+      >
+        {subtitle}
+      </p>
+      <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', maxWidth: 520, marginInline: 'auto' }}>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              height: 14,
+              borderRadius: 6,
+              background: 'linear-gradient(90deg, var(--yc-surface), #EFE7D6, var(--yc-surface))',
+              backgroundSize: '200% 100%',
+              animation: `vcShimmer 1.6s linear infinite`,
+              animationDelay: `${i * 0.2}s`,
+              opacity: 0.6 - i * 0.1,
+            }}
+          />
+        ))}
+      </div>
+      <p style={{ marginTop: 28, fontSize: 13, color: 'var(--yc-text-muted)' }}>
+        Full breakdown lands next. We started with Authority because your story leans there.
+      </p>
+      <style>{`
+        @keyframes vcShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
